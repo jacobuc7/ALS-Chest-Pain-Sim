@@ -113,6 +113,34 @@ h3 { font-size: 1.05rem; font-weight: 600; }
   #focusedAssessmentScreen .faTopActions button{
     width: 100%;
   }
+
+
+  /* Phone: long history / vitals must scroll — desktop keeps one-screen no scroll */
+  #focusedAssessmentScreen.screen.active{
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  #focusedAssessmentScreen.screen.active > .card{
+    overflow: visible;
+    flex: 0 0 auto;
+    min-height: 0;
+  }
+  #focusedAssessmentScreen .layout{
+    height: auto;
+    min-height: 0;
+  }
+  #focusedAssessmentScreen .mainPanel{
+    overflow: visible;
+    min-height: 0;
+  }
+  #focusedAssessmentScreen .sidePanel{
+    overflow: visible;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
 }
 
 
@@ -1518,13 +1546,6 @@ button.mainBtn:hover {
   .mainBtn,
   button.mainBtn {
     min-height: 48px;
-  }
-
-
-  /* Focused assessment: ensure vitals not cut off */
-  #focusedAssessmentScreen .sidePanel{
-    padding-bottom: 110px; /* account for fixed CTA */
-    overflow: auto;
   }
 
 
