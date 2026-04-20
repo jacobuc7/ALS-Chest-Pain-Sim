@@ -469,6 +469,12 @@ button.mainBtn:hover {
 .simLeft, .simRight { display: flex; flex-direction: column; gap: 12px; }
 
 
+/* Inner scroll on phone drawers only; `display: contents` keeps desktop layout unchanged */
+.simDrawerScroll {
+  display: contents;
+}
+
+
 .simCenter {
   display: grid;
   grid-template-rows: auto 1fr;
@@ -1107,15 +1113,15 @@ button.mainBtn:hover {
 }
 
 
-/* Drawer collapse handle (phone sim only; see phone block) */
+/* Drawer collapse handle (phone sim only; see phone block) — wide tab outside drawer to avoid mis-taps */
 .drawerHandleBtn{
   display: none;
-  border: 1px solid rgba(255,255,255,0.18);
-  background: rgba(10, 14, 20, 0.72);
+  border: 1px solid rgba(255,255,255,0.22);
+  background: rgba(10, 14, 20, 0.88);
   color: rgba(232,238,247,0.92);
   box-shadow: 0 14px 34px rgba(0,0,0,0.55);
-  width: 34px;
-  height: 56px;
+  width: 42px;
+  height: 68px;
   border-radius: 14px;
   padding: 0;
 }
@@ -1621,7 +1627,7 @@ button.mainBtn:hover {
   }
 
 
-  /* Drawers */
+  /* Drawers — overflow visible so folder-tab handles (negative inset) are not clipped */
   #ambulanceScreen .simLeft,
   #transportScreen .simLeft,
   #ambulanceScreen .simRight,
@@ -1631,12 +1637,27 @@ button.mainBtn:hover {
     bottom: 0;
     width: min(340px, 88vw);
     padding: 12px;
-    overflow: auto;
+    overflow: visible;
     background: linear-gradient(180deg, #3a5168 0%, #2a3849 100%);
     border: 1px solid rgba(255,255,255,0.14);
     box-shadow: 0 20px 50px rgba(0,0,0,0.4);
     z-index: 5600;
     transition: transform 180ms ease;
+  }
+
+
+  #ambulanceScreen .simLeft .simDrawerScroll,
+  #transportScreen .simLeft .simDrawerScroll,
+  #ambulanceScreen .simRight .simDrawerScroll,
+  #transportScreen .simRight .simDrawerScroll{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
 
@@ -1684,7 +1705,10 @@ button.mainBtn:hover {
     left: auto;
     width: min(360px, 92vw);
     padding: 14px 12px 18px;
-    overflow: auto;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     background: #33475c;
     background: linear-gradient(180deg, #3a5168 0%, #2c3d50 55%, #263445 100%);
     border: 1px solid rgba(255,255,255,0.16);
@@ -1697,6 +1721,19 @@ button.mainBtn:hover {
     border-bottom: 0;
     border-radius: 16px 0 0 16px;
     pointer-events: auto !important;
+  }
+
+
+  #ambulanceScreen .simActions .simDrawerScroll,
+  #transportScreen .simActions .simDrawerScroll{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
 
@@ -1980,11 +2017,11 @@ button.mainBtn:hover {
     font-size: 12px;
     line-height: 1;
     opacity: 0.95;
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
     border-radius: 6px;
-    background: rgba(255,255,255,0.10);
-    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.2);
     display: grid;
     place-items: center;
   }
@@ -1992,11 +2029,17 @@ button.mainBtn:hover {
     display: block;
     text-align: center;
   }
-  /* Place the arrow on the INSIDE edge of the tab */
-  .edgeTab--left .edgeTab__arrow{ right: 6px; }
-  .edgeTab--right .edgeTab__arrow{ left: 6px; }
-  .edgeTab--left{ padding-right: 26px; }
-  .edgeTab--right{ padding-left: 26px; }
+  /* Arrow on the OUTSIDE edge of the tab (toward scene) — easier to tap without hitting drawer UI */
+  .edgeTab--left .edgeTab__arrow{
+    left: 6px;
+    right: auto;
+  }
+  .edgeTab--right .edgeTab__arrow{
+    right: 6px;
+    left: auto;
+  }
+  .edgeTab--left{ padding-left: 28px; padding-right: 12px; }
+  .edgeTab--right{ padding-right: 28px; padding-left: 12px; }
   .edgeTab--left .edgeTab__arrow::before{
     content: "▶";
   }
@@ -2015,10 +2058,10 @@ button.mainBtn:hover {
   #transportScreen.mobileDrawer--dripsOpen .edgeTab--drips .edgeTab__arrow::before{
     content: "▶";
   }
-  /* Phone edge tabs: Monitor ↔ Treatments on one row (~25% down); Drips/O₂ below Treatments on the right */
-  .edgeTab--right{ right: 8px; }
+  /* Phone edge tabs: sit slightly OUTSIDE stage edge (folder-tab) so arrows aren’t over the scene UI */
+  .edgeTab--right{ right: -6px; }
   .mobileEdgeTabs .edgeTab--monitor{
-    left: 8px;
+    left: -6px;
     right: auto;
     top: 25%;
     transform: translateY(-50%);
@@ -2040,7 +2083,7 @@ button.mainBtn:hover {
   }
 
 
-  /* Drawer collapse handle: appears on the inside edge when drawer is open */
+  /* Drawer collapse handle: tab sits mostly OUTSIDE drawer (toward scene) — avoids mis-tapping meds */
   #ambulanceScreen .simLeft,
   #transportScreen .simLeft,
   #ambulanceScreen .simRight,
@@ -2061,25 +2104,32 @@ button.mainBtn:hover {
   #transportScreen .simLeft .drawerHandleBtn--monitor{
     position: absolute;
     top: 50%;
-    right: -18px;
+    right: -46px;
     transform: translateY(-50%);
-    z-index: 2;
+    z-index: 5901;
+    /* Folder tab: flat edge against drawer, rounded toward scene */
+    border-radius: 0 14px 14px 0;
+    box-shadow: 6px 10px 28px rgba(0,0,0,0.48);
   }
   #ambulanceScreen .simRight .drawerHandleBtn--drips,
   #transportScreen .simRight .drawerHandleBtn--drips{
     position: absolute;
     top: 50%;
-    left: -18px;
+    left: -46px;
     transform: translateY(-50%);
-    z-index: 2;
+    z-index: 5901;
+    border-radius: 14px 0 0 14px;
+    box-shadow: -6px 10px 28px rgba(0,0,0,0.48);
   }
   #ambulanceScreen .simActions .drawerHandleBtn--tx,
   #transportScreen .simActions .drawerHandleBtn--tx{
     position: absolute;
     top: 50%;
-    left: -18px;
+    left: -46px;
     transform: translateY(-50%);
-    z-index: 2;
+    z-index: 5901;
+    border-radius: 14px 0 0 14px;
+    box-shadow: -6px 10px 28px rgba(0,0,0,0.48);
   }
   /* Show handles only when their drawer is open */
   #ambulanceScreen.mobileDrawer--monitorOpen .simLeft .drawerHandleBtn--monitor,
