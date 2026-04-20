@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --font-ui: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   /* Premium “monitor” theme */
@@ -18,8 +18,6 @@
 }
 
 
-
-
 body {
   margin: 0;
   font-family: var(--font-ui);
@@ -33,8 +31,6 @@ body {
 }
 
 
-
-
 h1, h2, h3 {
   font-family: var(--font-ui);
   font-weight: 700;
@@ -45,12 +41,8 @@ h2 { font-size: 1.35rem; font-weight: 600; }
 h3 { font-size: 1.05rem; font-weight: 600; }
 
 
-
-
 .screen { display: none; padding: 20px; }
 .screen.active { display: block; }
-
-
 
 
 /* Focused assessment: keep on one viewport (no page scroll) */
@@ -63,15 +55,11 @@ h3 { font-size: 1.05rem; font-weight: 600; }
 }
 
 
-
-
 #focusedAssessmentScreen.screen.active > .card{
   flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
 }
-
-
 
 
 #focusedAssessmentScreen .layout{
@@ -80,14 +68,11 @@ h3 { font-size: 1.05rem; font-weight: 600; }
 }
 
 
-
-
 #focusedAssessmentScreen .mainPanel{
   min-height: 0;
   overflow: hidden; /* keep everything on one screen */
   padding-bottom: 0;
 }
-
 
 #focusedAssessmentScreen .faTopRow{
   display: flex;
@@ -110,13 +95,11 @@ h3 { font-size: 1.05rem; font-weight: 600; }
   margin: 0;
 }
 
-
 /* Tighten box spacing so Focused Assessment fits a single viewport. */
 #focusedAssessmentScreen .infoBox{
   margin: 10px 0;
   padding: 12px 14px;
 }
-
 
 @media (max-width: 600px) {
   #focusedAssessmentScreen .faTopRow{
@@ -133,13 +116,9 @@ h3 { font-size: 1.05rem; font-weight: 600; }
 }
 
 
-
-
 #focusedAssessmentScreen .sidePanel{
   min-height: 0;
 }
-
-
 
 
 .card {
@@ -152,8 +131,6 @@ h3 { font-size: 1.05rem; font-weight: 600; }
 .card.narrow { max-width: 520px; margin: auto; }
 
 
-
-
 .launcherCard h1,
 #startScreen .cardDisclaimer h1 {
   padding-bottom: 12px;
@@ -162,13 +139,9 @@ h3 { font-size: 1.05rem; font-weight: 600; }
 }
 
 
-
-
 .cardDisclaimer {
   border-left: 3px solid rgba(211, 47, 47, 0.45);
 }
-
-
 
 
 button {
@@ -191,8 +164,6 @@ button:hover {
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 
-
-
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
@@ -205,17 +176,11 @@ button:focus-visible:not(:disabled) {
 }
 
 
-
-
 .smallBtn { padding: 8px 10px; font-size: 12px; border-radius: 10px; }
-
-
 
 
 .ghostBtn { background: #333; border: 1px solid #444; }
 .ghostBtn:hover { background: #444; }
-
-
 
 
 .mainBtn,
@@ -232,12 +197,8 @@ button.mainBtn:hover {
 }
 
 
-
-
 .notesBtn { background: rgba(90, 108, 132, 0.7); }
 .notesBtn:hover { background: rgba(104, 126, 154, 0.8); }
-
-
 
 
 .infoBox {
@@ -249,19 +210,13 @@ button.mainBtn:hover {
 }
 
 
-
-
 .layout { display: flex; gap: 20px; }
 .sidePanel { width: 30%; }
 .mainPanel { width: 70%; }
 
 
-
-
 .actionGrid { display: flex; flex-wrap: wrap; gap: 10px; }
 .choiceBtn { flex: 1 1 45%; }
-
-
 
 
 .modal {
@@ -271,8 +226,6 @@ button.mainBtn:hover {
   background: rgba(0,0,0,0.8);
   z-index: 7000;
 }
-
-
 
 
 .mobileDrawerBackdrop{
@@ -298,8 +251,6 @@ button.mainBtn:hover {
 }
 
 
-
-
 .ownershipBox {
   background: #222;
   padding: 12px 14px;
@@ -307,8 +258,6 @@ button.mainBtn:hover {
   border-left: 4px solid rgba(211, 47, 47, 0.65);
   border-radius: 0 8px 8px 0;
 }
-
-
 
 
 #feedbackBox {
@@ -329,8 +278,6 @@ button.mainBtn:hover {
 }
 
 
-
-
 .modalContentTall{
   display:flex;
   flex-direction:column;
@@ -344,8 +291,6 @@ button.mainBtn:hover {
   background:#161616;
   border:1px solid #2b2b2b;
 }
-
-
 
 
 .actionTs{
@@ -364,8 +309,6 @@ button.mainBtn:hover {
 }
 
 
-
-
 .feedbackLink{
   display:inline-block;
   margin-top:10px;
@@ -373,8 +316,6 @@ button.mainBtn:hover {
   text-decoration:none;
 }
 .feedbackLink:hover{ text-decoration:underline; }
-
-
 
 
 .simShell {
@@ -386,8 +327,6 @@ button.mainBtn:hover {
   gap: 12px;
   align-items: stretch;
 }
-
-
 
 
 /*
@@ -411,8 +350,6 @@ button.mainBtn:hover {
   }
 
 
-
-
   #ambulanceScreen.screen.active .simShell,
   #transportScreen.screen.active .simShell {
     flex: 1 1 auto;
@@ -422,14 +359,10 @@ button.mainBtn:hover {
   }
 
 
-
-
   #ambulanceScreen.screen.active .simCenter,
   #transportScreen.screen.active .simCenter {
     min-height: 0;
   }
-
-
 
 
   /* Allow stage to shrink on short displays (transport has quote + timer + tabs) */
@@ -438,8 +371,6 @@ button.mainBtn:hover {
     min-height: min(520px, calc(100vh - 300px));
     min-height: min(520px, calc(100dvh - 300px));
   }
-
-
 
 
   /* Narrower drips / O₂ / pressor column — compact cards so one screen fits */
@@ -478,20 +409,22 @@ button.mainBtn:hover {
   #transportScreen.screen.active .simRight .pressorPanel {
     margin-top: 4px;
   }
-  #ambulanceScreen.screen.active .simRight .pressorPanel input[type="range"],
-  #transportScreen.screen.active .simRight .pressorPanel input[type="range"] {
-    width: 120px;
+  #ambulanceScreen.screen.active .simRight .pressorPanel .hudRow:has(#pressorRate) input[type="range"],
+  #transportScreen.screen.active .simRight .pressorPanel .hudRow:has(#pressorRate2) input[type="range"] {
+    width: 100%;
+    min-width: 0;
   }
   #ambulanceScreen.screen.active .simRight .oxygenDialRow input[type="range"],
   #transportScreen.screen.active .simRight .oxygenDialRow input[type="range"] {
-    width: 110px;
+    width: 100%;
+    min-width: 0;
   }
-  #ambulanceScreen.screen.active .simRight input[id^="fluidRateSlider"],
-  #transportScreen.screen.active .simRight input[id^="fluidRateSlider"] {
-    width: 120px;
+  /* Width comes from grid + minmax(0,1fr) on .hudRow:has(fluid slider) */
+  #ambulanceScreen.screen.active .simRight .hudRow:has(input[id^="fluidRateSlider"]) input[id^="fluidRateSlider"],
+  #transportScreen.screen.active .simRight .hudRow:has(input[id^="fluidRateSlider"]) input[id^="fluidRateSlider"] {
+    width: 100%;
+    min-width: 0;
   }
-
-
 
 
   /* Long treatment lists scroll; stack stays bottom-anchored (default .simActions grid + bottom:12px) */
@@ -505,11 +438,7 @@ button.mainBtn:hover {
 }
 
 
-
-
 .simLeft, .simRight { display: flex; flex-direction: column; gap: 12px; }
-
-
 
 
 .simCenter {
@@ -520,11 +449,7 @@ button.mainBtn:hover {
 }
 
 
-
-
 .simTop { display: grid; gap: 12px; }
-
-
 
 
 .hudCard {
@@ -537,8 +462,6 @@ button.mainBtn:hover {
 }
 
 
-
-
 .hudMono {
   font-size: 15px;
   color: rgba(47, 230, 166, 0.92);
@@ -547,16 +470,10 @@ button.mainBtn:hover {
 }
 
 
-
-
 .blueText { color: #00bfff; }
 
 
-
-
 .hudSub { margin-top: 8px; font-size: 12px; color: #bdbdbd; }
-
-
 
 
 .hudSpo2Line {
@@ -569,8 +486,6 @@ button.mainBtn:hover {
 }
 
 
-
-
 /* Matches monitor alarm banner (LOW BP, HIGH BP, LOW SpO2, BRADY, TACHY) */
 .hudVitalLine.hudVital--alarm,
 .hudSpo2Line.hudVital--alarm {
@@ -579,8 +494,6 @@ button.mainBtn:hover {
   text-shadow: 0 0 14px rgba(255, 60, 60, 0.55);
   animation: vitalAlarmPulse 1s ease-in-out infinite;
 }
-
-
 
 
 .hudSpo2Line.hudVital--warn {
@@ -602,8 +515,6 @@ button.mainBtn:hover {
 }
 
 
-
-
 @keyframes vitalAlarmPulse {
   0%,
   100% {
@@ -617,8 +528,6 @@ button.mainBtn:hover {
 }
 
 
-
-
 @media (prefers-reduced-motion: reduce) {
   .hudVitalLine.hudVital--alarm,
   .hudSpo2Line.hudVital--alarm,
@@ -626,8 +535,6 @@ button.mainBtn:hover {
     animation: none;
   }
 }
-
-
 
 
 .simGlassStack {
@@ -638,8 +545,6 @@ button.mainBtn:hover {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
-
-
 
 
 .hudQuote {
@@ -653,8 +558,6 @@ button.mainBtn:hover {
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
-
-
 
 
 .hudTimer {
@@ -673,8 +576,6 @@ button.mainBtn:hover {
 }
 
 
-
-
 .hudTimer--urgent {
   color: #ff6b6b;
   border-color: rgba(255, 80, 80, 0.55);
@@ -683,14 +584,10 @@ button.mainBtn:hover {
 }
 
 
-
-
 /* Transport timer duplicate for phone (see #transportTimer in .simTop); shown only in phone block */
 .simTransportTimerMobile {
   display: none;
 }
-
-
 
 
 /* BP cycle countdown duplicate for phone (see #bpCycleStatus* in monitor drawer); shown only in phone block */
@@ -699,14 +596,10 @@ button.mainBtn:hover {
 }
 
 
-
-
 /* Patient quote duplicate for phone (see .simTop .hudQuote); shown only in phone block */
 .simPatientQuoteMobile {
   display: none;
 }
-
-
 
 
 /* Phone: alarm cue on patient scene when alarming (setAlarmBanner toggles .simAlarmSceneCue--on); wide layouts use Monitor card only */
@@ -763,14 +656,10 @@ button.mainBtn:hover {
 }
 
 
-
-
 @keyframes timerPulse {
   0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255, 80, 80, 0.35); }
   50% { opacity: 0.92; box-shadow: 0 0 20px rgba(255, 60, 60, 0.25); }
 }
-
-
 
 
 .tabBar.simTabs {
@@ -793,8 +682,6 @@ button.mainBtn:hover {
 .tabBar.simTabs button:hover { background: #3a3a3a; }
 
 
-
-
 .transportBtn{
   background: rgba(255, 59, 48, 0.88);
   border: 1px solid rgba(255, 120, 120, 0.55);
@@ -807,8 +694,6 @@ button.mainBtn:hover {
   transform: translateY(-1px);
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 59, 48, 0.22) inset;
 }
-
-
 
 
 .experienceCallout{
@@ -824,8 +709,6 @@ button.mainBtn:hover {
 }
 
 
-
-
 .simStage {
   position: relative;
   background: linear-gradient(180deg, rgba(10, 14, 20, 0.92), rgba(6, 9, 14, 0.92));
@@ -837,8 +720,6 @@ button.mainBtn:hover {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
-
-
 
 
 .simStage::before{
@@ -861,8 +742,6 @@ button.mainBtn:hover {
 }
 
 
-
-
 /* Patient scene: photo + nasal overlay; keep same min-height as .simStage so buttons don’t collapse */
 .simStage.simStage--scene {
   display: flex;
@@ -872,8 +751,6 @@ button.mainBtn:hover {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
-
-
 
 
 /* Top bar: makes the still read as “equipment view” instead of a raw photo dropped in */
@@ -900,16 +777,12 @@ button.mainBtn:hover {
 }
 
 
-
-
 .simSceneChrome__left {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
 }
-
-
 
 
 .simSceneChrome__dot {
@@ -920,8 +793,6 @@ button.mainBtn:hover {
   box-shadow: 0 0 0 2px rgba(47, 224, 138, 0.25);
   flex-shrink: 0;
 }
-
-
 
 
 .simSceneChrome__title {
@@ -935,8 +806,6 @@ button.mainBtn:hover {
 }
 
 
-
-
 .simSceneChrome__badge {
   font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
   font-size: 10px;
@@ -948,8 +817,6 @@ button.mainBtn:hover {
   border: 1px solid rgba(255, 120, 120, 0.35);
   background: rgba(40, 10, 10, 0.45);
 }
-
-
 
 
 .simStageFigure {
@@ -980,8 +847,6 @@ button.mainBtn:hover {
 }
 
 
-
-
 /* Blend photo edges into the stage so “letterbox” bands look intentional */
 .simStageFigure::after {
   content: "";
@@ -997,20 +862,14 @@ button.mainBtn:hover {
 }
 
 
-
-
 .simStageFigure > img {
   z-index: 2;
 }
 
 
-
-
 /* Ensure scene sits above stage overlays like scanlines/vignette */
 .simStage--scene .simStageFigure { z-index: 2; }
 .simStage--scene .simActions { z-index: 3; }
-
-
 
 
 .simStageNcOverlay {
@@ -1028,14 +887,10 @@ button.mainBtn:hover {
 }
 
 
-
-
 .simStageNcOverlay.simStageNcOverlay--on {
   opacity: 1;
   visibility: visible;
 }
-
-
 
 
 .simStageNrbOverlay {
@@ -1053,14 +908,10 @@ button.mainBtn:hover {
 }
 
 
-
-
 .simStageNrbOverlay.simStageNrbOverlay--on {
   opacity: 1;
   visibility: visible;
 }
-
-
 
 
 .simStageIvLeftOverlay {
@@ -1078,14 +929,10 @@ button.mainBtn:hover {
 }
 
 
-
-
 .simStageIvLeftOverlay.simStageIvLeftOverlay--on {
   opacity: 1;
   visibility: visible;
 }
-
-
 
 
 .simStageIvRightOverlay {
@@ -1103,14 +950,10 @@ button.mainBtn:hover {
 }
 
 
-
-
 .simStageIvRightOverlay.simStageIvRightOverlay--on {
   opacity: 1;
   visibility: visible;
 }
-
-
 
 
 .simStageFluidsLeftOverlay {
@@ -1127,14 +970,10 @@ button.mainBtn:hover {
 }
 
 
-
-
 .simStageFluidsLeftOverlay.simStageFluidsLeftOverlay--on {
   opacity: 1;
   visibility: visible;
 }
-
-
 
 
 .simStageDripRightOverlay {
@@ -1151,14 +990,10 @@ button.mainBtn:hover {
 }
 
 
-
-
 .simStageDripRightOverlay.simStageDripRightOverlay--on {
   opacity: 1;
   visibility: visible;
 }
-
-
 
 
 /* Subtle “alive” motion */
@@ -1170,14 +1005,10 @@ button.mainBtn:hover {
 }
 
 
-
-
 @keyframes dripSway {
   0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
   50% { transform: translate3d(0.5px, 0.5px, 0) rotate(0.25deg); }
 }
-
-
 
 
 .simStageFluidsLeftOverlay.simStageFluidsLeftOverlay--on,
@@ -1187,15 +1018,11 @@ button.mainBtn:hover {
 }
 
 
-
-
 @media (prefers-reduced-motion: reduce) {
   .simStageFigure { animation: none !important; }
   .simStageFluidsLeftOverlay,
   .simStageDripRightOverlay { animation: none !important; }
 }
-
-
 
 
 .simActions {
@@ -1212,8 +1039,6 @@ button.mainBtn:hover {
 .simActions * { pointer-events: auto; }
 
 
-
-
 .actionGroupTitle{
   width: 100%;
   text-align: center;
@@ -1223,8 +1048,6 @@ button.mainBtn:hover {
   color: rgba(232, 238, 247, 0.6);
   margin: 2px 0 6px;
 }
-
-
 
 
 .effectChips{
@@ -1239,11 +1062,7 @@ button.mainBtn:hover {
 }
 
 
-
-
 .mobileEdgeTabs{ display: none; }
-
-
 
 
 /* Phone drawer dim + dismiss (taps here call closeMobileDrawers); shown only in @media (max-width: 600px) when a drawer is open */
@@ -1253,15 +1072,11 @@ button.mainBtn:hover {
 }
 
 
-
-
 /* Bottom-center Transport (phone sim only; see phone block) */
 .simFloatingTransportWrap {
   display: none;
   pointer-events: none;
 }
-
-
 
 
 /* Drawer collapse handle (phone sim only; see phone block) */
@@ -1278,14 +1093,10 @@ button.mainBtn:hover {
 }
 
 
-
-
 /* In-drawer tab shortcuts: hidden unless phone Tx drawer is open (avoids doubling simTop tabs ~601–960px). */
 .mobileTxNav {
   display: none;
 }
-
-
 
 
 .effectChip{
@@ -1306,8 +1117,6 @@ button.mainBtn:hover {
 }
 
 
-
-
 .effectChip--good{
   border-color: rgba(47, 230, 166, 0.25);
 }
@@ -1317,8 +1126,6 @@ button.mainBtn:hover {
 .effectChip--bad{
   border-color: rgba(255, 59, 48, 0.28);
 }
-
-
 
 
 .effectChip .chipIcon{
@@ -1333,14 +1140,10 @@ button.mainBtn:hover {
 .effectChip--bad  .chipIcon{ background: rgba(255, 59, 48, 0.92); box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.14); }
 
 
-
-
 @keyframes chipIn{
   from{ transform: translate3d(0,-6px,0); opacity: 0; }
   to{ transform: translate3d(0,0,0); opacity: 1; }
 }
-
-
 
 
 .tabContent { display: none; width: 100%; }
@@ -1359,16 +1162,10 @@ button.mainBtn:hover {
 .tabContent button { min-width: 180px; }
 
 
-
-
 .simBottomBar { display: flex; justify-content: center; }
 
 
-
-
 .btnRow { display: flex; gap: 8px; flex-wrap: wrap; }
-
-
 
 
 .hudRow {
@@ -1382,6 +1179,61 @@ button.mainBtn:hover {
 .hudLabel { font-size: 12px; color: #cfcfcf; }
 
 
+/* Right column (Fluids / O₂ / pressors): keep "Rate:" / "Flow:" visible — row was clipping on narrow panels */
+.simRight .hudRow {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.simRight .hudLabel {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.simRight .hudRow .smallBtn {
+  flex-shrink: 0;
+}
+
+
+/* Fluids: label + steppers + slider + Stop — grid so label never gets squeezed off */
+.simRight .hudRow:has(input[id^="fluidRateSlider"]) {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  column-gap: 6px;
+  row-gap: 6px;
+}
+.simRight .hudRow:has(input[id^="fluidRateSlider"]) input[id^="fluidRateSlider"] {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
+
+
+/* Pressors rate row (4 controls) */
+.simRight .pressorPanel .hudRow:has(#pressorRate),
+.simRight .pressorPanel .hudRow:has(#pressorRate2) {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 6px;
+}
+.simRight .pressorPanel .hudRow:has(#pressorRate) input[type="range"],
+.simRight .pressorPanel .hudRow:has(#pressorRate2) input[type="range"] {
+  width: 100%;
+  min-width: 0;
+}
+
+
+/* Oxygen flow row (label, −, slider, +) */
+.simRight .hudRow.oxygenDialRow {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 6px;
+}
+.simRight .hudRow.oxygenDialRow input[type="range"] {
+  width: 100%;
+  min-width: 0;
+}
 
 
 .selectDark {
@@ -1393,11 +1245,7 @@ button.mainBtn:hover {
 }
 
 
-
-
 .pressorPanel input[type="range"] { width: 160px; }
-
-
 
 
 .oxygenDialRow input[type="range"] { width: 140px; }
@@ -1405,8 +1253,6 @@ button.mainBtn:hover {
   opacity: 0.45;
   pointer-events: none;
 }
-
-
 
 
 .rhythmCanvas {
@@ -1418,8 +1264,6 @@ button.mainBtn:hover {
   border-radius: 10px;
   display: block;
 }
-
-
 
 
 .alarmBanner {
@@ -1444,8 +1288,6 @@ button.mainBtn:hover {
 @keyframes alarmBlink { 50% { opacity: 0.35; } }
 
 
-
-
 .gradeBig {
   font-size: 28px;
   font-weight: 800;
@@ -1458,8 +1300,6 @@ button.mainBtn:hover {
 .grade-poor { color: #c75c5c; }
 
 
-
-
 .debriefBox {
   margin-top: 12px;
   padding: 10px;
@@ -1467,8 +1307,6 @@ button.mainBtn:hover {
   background: #161616;
   border: 1px solid #2b2b2b;
 }
-
-
 
 
 @media (max-width: 1100px) {
@@ -1483,8 +1321,6 @@ button.mainBtn:hover {
   .simCenter { grid-area: center; }
   .simRight { grid-area: right; }
 }
-
-
 
 
 /* Tablet / small laptop: one column sim sooner (avoids squeezed 2-col) */
@@ -1511,8 +1347,6 @@ button.mainBtn:hover {
   }
 
 
-
-
   .simStage {
     min-height: 200px;
     overflow: visible;
@@ -1523,13 +1357,9 @@ button.mainBtn:hover {
   }
 
 
-
-
   .simStage.simStage--scene {
     justify-content: flex-start;
   }
-
-
 
 
   .simActions {
@@ -1543,15 +1373,11 @@ button.mainBtn:hover {
 }
 
 
-
-
 /* Phone: touch-friendly, no horizontal mash */
 @media (max-width: 600px) {
   .screen {
     padding: 12px 10px;
   }
-
-
 
 
   .card,
@@ -1560,14 +1386,10 @@ button.mainBtn:hover {
   }
 
 
-
-
   /* Results screen: extra bottom space so “Leave Feedback” stays clear on small viewports */
   #endScreen.screen.active .card.narrow {
     padding-bottom: max(28px, calc(env(safe-area-inset-bottom) + 18px));
   }
-
-
 
 
   .layout {
@@ -1579,15 +1401,11 @@ button.mainBtn:hover {
   }
 
 
-
-
   .simShell {
     height: auto;
     min-height: 0;
     padding-bottom: env(safe-area-inset-bottom, 0);
   }
-
-
 
 
   .simStage {
@@ -1600,13 +1418,9 @@ button.mainBtn:hover {
   }
 
 
-
-
   .simStage.simStage--scene {
     justify-content: flex-start;
   }
-
-
 
 
   .simActions {
@@ -1619,15 +1433,11 @@ button.mainBtn:hover {
   }
 
 
-
-
   .tabBar.simTabs {
     justify-content: center;
     flex-wrap: wrap;
     gap: 8px;
   }
-
-
 
 
   .tabBar.simTabs button {
@@ -1640,8 +1450,6 @@ button.mainBtn:hover {
   }
 
 
-
-
   /* Full-width transport CTA in the top tab bar only — not inside compact mobileTxNav */
   .simTop .transportBtn {
     flex: 1 1 100%;
@@ -1649,14 +1457,10 @@ button.mainBtn:hover {
   }
 
 
-
-
   .tabContent.active {
     flex-direction: column;
     align-items: stretch;
   }
-
-
 
 
   .tabContent button {
@@ -1669,14 +1473,10 @@ button.mainBtn:hover {
   }
 
 
-
-
   .simBottomBar .notesBtn {
     width: 100%;
     min-height: 48px;
   }
-
-
 
 
   .choiceBtn {
@@ -1685,13 +1485,9 @@ button.mainBtn:hover {
   }
 
 
-
-
   .actionGrid {
     flex-direction: column;
   }
-
-
 
 
   .hudMono {
@@ -1699,13 +1495,9 @@ button.mainBtn:hover {
   }
 
 
-
-
   .rhythmCanvas {
     height: 72px;
   }
-
-
 
 
   #feedbackBox {
@@ -1717,14 +1509,10 @@ button.mainBtn:hover {
   }
 
 
-
-
   button,
   .smallBtn {
     touch-action: manipulation;
   }
-
-
 
 
   .mainBtn,
@@ -1733,15 +1521,11 @@ button.mainBtn:hover {
   }
 
 
-
-
   /* Focused assessment: ensure vitals not cut off */
   #focusedAssessmentScreen .sidePanel{
     padding-bottom: 110px; /* account for fixed CTA */
     overflow: auto;
   }
-
-
 
 
   /* --- Phone “app mode”: full scene + overlay drawers (sim screens only) --- */
@@ -1755,8 +1539,6 @@ button.mainBtn:hover {
   }
 
 
-
-
   #ambulanceScreen.screen.active .simShell,
   #transportScreen.screen.active .simShell{
     display: block;
@@ -1766,14 +1548,10 @@ button.mainBtn:hover {
   }
 
 
-
-
   #ambulanceScreen.screen.active .simTop,
   #transportScreen.screen.active .simTop{
     display: none;
   }
-
-
 
 
   #ambulanceScreen.screen.active .simCenter,
@@ -1781,8 +1559,6 @@ button.mainBtn:hover {
     display: block;
     height: 100%;
   }
-
-
 
 
   #ambulanceScreen.screen.active .simStage,
@@ -1797,8 +1573,6 @@ button.mainBtn:hover {
     border: 0;
     box-shadow: none;
   }
-
-
 
 
   #ambulanceScreen.screen.active .simStageFigure,
@@ -1818,16 +1592,12 @@ button.mainBtn:hover {
   }
 
 
-
-
   /* Phone: overlays must scale EXACTLY like the base scene (cover), so alignment matches. */
   #ambulanceScreen.screen.active .simStageFigure img,
   #transportScreen.screen.active .simStageFigure img{
     object-fit: cover;
     object-position: center center;
   }
-
-
 
 
   /* Drawers */
@@ -1849,8 +1619,6 @@ button.mainBtn:hover {
   }
 
 
-
-
   #ambulanceScreen .simLeft,
   #transportScreen .simLeft{
     left: 0;
@@ -1860,8 +1628,6 @@ button.mainBtn:hover {
     border-bottom: 0;
     border-radius: 0 16px 16px 0;
   }
-
-
 
 
   #ambulanceScreen .simRight,
@@ -1875,22 +1641,16 @@ button.mainBtn:hover {
   }
 
 
-
-
   #ambulanceScreen.mobileDrawer--monitorOpen .simLeft,
   #transportScreen.mobileDrawer--monitorOpen .simLeft{
     transform: translate3d(0,0,0);
   }
 
 
-
-
   #ambulanceScreen.mobileDrawer--dripsOpen .simRight,
   #transportScreen.mobileDrawer--dripsOpen .simRight{
     transform: translate3d(0,0,0);
   }
-
-
 
 
   /* Treatments drawer uses .simActions */
@@ -1917,8 +1677,6 @@ button.mainBtn:hover {
     border-radius: 16px 0 0 16px;
     pointer-events: auto !important;
   }
-
-
 
 
   /* Sticky shortcuts only while Tx drawer is open */
@@ -1957,14 +1715,10 @@ button.mainBtn:hover {
   }
 
 
-
-
   #ambulanceScreen .simActions .tabContent,
   #transportScreen .simActions .tabContent{
     pointer-events: auto;
   }
-
-
 
 
   /* Avoid “blurry drawer” look on some phones */
@@ -1975,14 +1729,10 @@ button.mainBtn:hover {
   }
 
 
-
-
   #ambulanceScreen.mobileDrawer--txOpen .simActions,
   #transportScreen.mobileDrawer--txOpen .simActions{
     transform: translateX(0);
   }
-
-
 
 
   /* Tap outside drawers to close (above patient scene, below panels & edge tabs) */
@@ -2007,14 +1757,10 @@ button.mainBtn:hover {
   }
 
 
-
-
   #ambulanceScreen.screen.active .effectChips,
   #transportScreen.screen.active .effectChips{
     z-index: 46;
   }
-
-
 
 
   /* Phone: patient quote (desktop .simTop .hudQuote is hidden in app mode) */
@@ -2033,8 +1779,6 @@ button.mainBtn:hover {
   }
 
 
-
-
   #transportScreen.screen.active .simPatientQuoteMobile{
     display: block;
     position: fixed;
@@ -2048,8 +1792,6 @@ button.mainBtn:hover {
     text-align: center;
     font-size: 14px;
   }
-
-
 
 
   /* Phone: BP cycle status under patient quote (ambulance leg); mirrors monitor drawer countdown */
@@ -2070,8 +1812,6 @@ button.mainBtn:hover {
   }
 
 
-
-
   /* Transport leg: countdown under mirrored quote (extra gap so multi-line quotes don’t collide) */
   #transportScreen.screen.active .simTransportTimerMobile{
     display: block;
@@ -2084,8 +1824,6 @@ button.mainBtn:hover {
     margin: 0;
     pointer-events: none;
   }
-
-
 
 
   /* Phone: BP cycle under transport countdown (extra gap — timer is multi-line / taller than single-line BP text) */
@@ -2106,8 +1844,6 @@ button.mainBtn:hover {
   }
 
 
-
-
   /* Phone: alarm flash on main scene when monitor is closed; hide while monitor drawer is open */
   #ambulanceScreen.screen.active .simAlarmSceneCue.simAlarmSceneCue--on,
   #transportScreen.screen.active .simAlarmSceneCue.simAlarmSceneCue--on{
@@ -2125,8 +1861,6 @@ button.mainBtn:hover {
   #transportScreen.mobileDrawer--monitorOpen .simAlarmSceneCue.simAlarmSceneCue--on{
     display: none !important;
   }
-
-
 
 
   .simAlarmSceneCue.simAlarmSceneCue--on .simAlarmSceneCue__bang {
@@ -2150,15 +1884,11 @@ button.mainBtn:hover {
   }
 
 
-
-
   /* Slightly richer top area when HUD is minimal (drawers closed) */
   #ambulanceScreen.screen.active .simStage::before,
   #transportScreen.screen.active .simStage::before{
     opacity: 0.42;
   }
-
-
 
 
   /* Transport CTA: ambulance only; hidden once en-route (#transportScreen) */
@@ -2185,8 +1915,6 @@ button.mainBtn:hover {
     font-weight: 700;
     box-shadow: 0 16px 36px rgba(0,0,0,0.55);
   }
-
-
 
 
   .mobileEdgeTabs{ display:flex; }
@@ -2291,8 +2019,6 @@ button.mainBtn:hover {
   }
 
 
-
-
   /* Drawer collapse handle: appears on the inside edge when drawer is open */
   #ambulanceScreen .simLeft,
   #transportScreen .simLeft,
@@ -2308,8 +2034,6 @@ button.mainBtn:hover {
   #transportScreen .simRight{
     position: fixed;
   }
-
-
 
 
   #ambulanceScreen .simLeft .drawerHandleBtn--monitor,
@@ -2364,13 +2088,9 @@ button.mainBtn:hover {
   }
 
 
-
-
   /* Legacy full-app backdrop unused; dimming is .simDrawerScrim */
   .mobileDrawerBackdrop{ display: none !important; }
 }
-
-
 
 
 /* ----- Launcher / CE mode ----- */
@@ -2439,7 +2159,6 @@ button.mainBtn:hover {
   margin: 8px 0;
 }
 
-
 /* CE objectives */
 .ceObjList{
   margin: 8px 0 14px;
@@ -2450,13 +2169,81 @@ button.mainBtn:hover {
 .ceObjList li{
   margin: 6px 0;
 }
+
+
+/* Results screen: score breakdown */
+.scoreHead{
+  margin-bottom: 14px;
+}
+.scoreNumber{
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.scoreOutOf{
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(232, 238, 247, 0.75);
+}
+.scoreSub{
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(232, 238, 247, 0.72);
+}
+.scoreBreakdownBox{
+  text-align: left;
+}
+.scoreBreakdownLead{
+  margin: 8px 0 10px;
+  font-size: 13px;
+  color: #bdbdbd;
+  line-height: 1.45;
+}
+.scoreBreakdownItem{
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 8px 0;
+  background: rgba(0, 0, 0, 0.22);
+}
+.scoreBreakdownItem .scoreDelta{
+  display: inline-block;
+  min-width: 3.2em;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #ff8a80;
+  margin-right: 8px;
+}
+.scoreDeductionTitle{
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.35;
+}
+.scoreTeaching{
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(232, 238, 247, 0.78);
+}
+.scoreNoDeductions{
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #8fd9b3;
+}
+.scoreNotesHint{
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: #9aa7b8;
+  line-height: 1.4;
+}
+
+
 @media (max-width: 700px) {
   .modePick {
     grid-template-columns: 1fr;
   }
 }
-
-
 
 
 /* Med buttons: max doses used (shared across ambulance + transport) */
@@ -2467,11 +2254,7 @@ button.medDepleted {
 }
 
 
-
-
 /* ----- Lesson / quiz / cert ----- */
-
-
 
 
 .lessonCaseTag { margin: 0 0 8px; font-size: 13px; color: #9ad; }
@@ -2485,8 +2268,6 @@ button.medDepleted {
   margin: 10px 0 14px;
 }
 .lessonBackBtn { display: block; margin-left: auto; margin-right: auto; }
-
-
 
 
 .quizHint { font-size: 14px; line-height: 1.4; color: #ccc; margin-bottom: 14px; }
@@ -2506,8 +2287,6 @@ button.medDepleted {
 .quizFeedback.pass { color: #6ecf8b; }
 .quizFeedback.fail { color: #c9925a; }
 .quizActions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-
-
 
 
 .certIntro { font-size: 14px; line-height: 1.45; margin-bottom: 12px; }
@@ -2569,8 +2348,6 @@ button.medDepleted {
 }
 .certActions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .mainBtn.ghostBtn { background: #333; }
-
-
 
 
 @media print {
