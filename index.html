@@ -1,0 +1,1021 @@
+﻿<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ALS Chest Pain Simulator</title>
+  <link rel="preload" as="image" href="https://i.imgur.com/FZbAyMr.png" />
+  <link rel="preload" as="image" href="https://i.imgur.com/rSPrGRU.png" />
+  <link rel="preload" as="image" href="https://i.imgur.com/m7jpxLv.png" />
+  <link rel="preload" as="image" href="https://i.imgur.com/OxsO8md.png" />
+  <link rel="preload" as="image" href="https://i.imgur.com/ygDM2Md.png" />
+  <link rel="preload" as="image" href="https://i.imgur.com/k2UMBRU.png" />
+  <link rel="preload" as="image" href="https://i.imgur.com/Y85BAx0.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+
+
+
+<body>
+  <input type="hidden" id="scenarioCaseType" value="" />
+
+
+
+
+  <div id="app">
+    <div id="feedbackBox" class="feedbackBox"></div>
+    <!-- Legacy dim layer (unused): closing uses .simDrawerScrim inside each sim stage on phone -->
+    <div id="mobileDrawerBackdrop" class="mobileDrawerBackdrop" aria-hidden="true"></div>
+
+
+
+
+    <!-- MODE SELECT (first screen) -->
+    <section id="launcherScreen" class="screen active">
+      <div class="card launcherCard">
+        <h1>ALS Chest Pain Simulator</h1>
+        <p class="launcherLead">
+          Choose how you want to run the scenario. Both modes use the same patient-care flow; the difference is whether the case and grading are fully random or aligned to continuing-education-style review.
+        </p>
+        <div class="experienceCallout" role="note">
+          Best experience: use a <strong>computer</strong> or <strong>tablet</strong>.
+        </div>
+
+
+
+
+        <div class="modePick">
+          <div class="modeCard modeCardPractice">
+            <h2>Practice mode</h2>
+            <p>
+              A <strong>randomly generated</strong> chest-pain case each run—history, vitals, rhythm, and ECG pattern vary like real shifts.
+              Use it to rehearse <strong>clinical prioritization</strong>, treatments, transport decisions, and debrief feedback without lesson or quiz requirements.
+            </p>
+            <button type="button" class="mainBtn" onclick="choosePracticeMode()">Practice mode</button>
+          </div>
+
+
+
+
+          <div class="modeCard modeCardCe">
+            <h2>CE mode</h2>
+            <p>
+              <strong>Continuing-education track:</strong> acknowledge the disclaimer, <strong>choose the ECG pattern</strong> you want to study (inferior, anterior, lateral, or NSTEMI),
+              then complete the scenario. If you earn a <strong>Good</strong> score or better, you unlock <strong>Lesson &amp; review</strong> and the knowledge check for a demo completion screen.
+              Follow your agency’s rules for actual CE credit—this module is a structured teaching path, not a substitute for formal credentialing.
+            </p>
+            <button type="button" class="mainBtn" onclick="chooseCEMode()">CE mode</button>
+          </div>
+        </div>
+
+
+
+
+        <p class="launcherFoot">
+          Educational simulation only—not a substitute for protocols, medical direction, or your department’s authorization to practice.
+        </p>
+      </div>
+    </section>
+
+
+
+
+    <!-- CE: acknowledge (before ECG pick) -->
+    <section id="ceAckScreen" class="screen">
+      <div class="card narrow">
+        <h2>CE mode — acknowledgment</h2>
+        <div class="infoBox">
+          <p>
+            You are entering the <strong>continuing-education track</strong>. Content is for learning and self-assessment.
+            It does <strong>not</strong> replace your service’s policies, offline CE requirements, or proof of credit unless your organization explicitly approves this tool.
+          </p>
+          <p>
+            You will select an ECG scenario type next; the simulation will use that pattern while other patient factors stay randomly generated—mirroring focused drill while preserving realistic variability.
+          </p>
+        </div>
+        <button type="button" class="mainBtn" onclick="ceAckContinue()">I understand — continue</button>
+        <button type="button" class="smallBtn ghostBtn" onclick="goToLauncher()">Back</button>
+      </div>
+    </section>
+
+
+
+
+    <!-- CE: pick ECG type -->
+    <section id="ceEcgScreen" class="screen">
+      <div class="card narrow">
+        <h2>Choose your ECG focus</h2>
+        <p class="ceEcgLead">
+          Select the pattern for this run. Dispatch through transport will follow; interpret the 12-lead when you reach it—findings will match your choice.
+        </p>
+        <div class="actionGrid">
+          <button type="button" class="choiceBtn" onclick="beginCEWithCase('inferior')">Inferior STEMI</button>
+          <button type="button" class="choiceBtn" onclick="beginCEWithCase('anterior')">Anterior STEMI</button>
+          <button type="button" class="choiceBtn" onclick="beginCEWithCase('lateral')">Lateral STEMI</button>
+          <button type="button" class="choiceBtn" onclick="beginCEWithCase('nstemi')">NSTEMI (no STEMI)</button>
+        </div>
+        <button type="button" class="smallBtn ghostBtn" onclick="showScreen('ceAckScreen')">Back</button>
+      </div>
+    </section>
+
+
+    <!-- CE: objectives (after ECG pick) -->
+    <section id="ceObjectivesScreen" class="screen">
+      <div class="card narrow">
+        <h2 id="ceObjectivesTitle">CE objectives</h2>
+        <div class="infoBox">
+          <strong>Simulation</strong>
+          <ul id="ceObjSim" class="ceObjList"></ul>
+          <strong>Lesson &amp; review</strong>
+          <ul id="ceObjLesson" class="ceObjList"></ul>
+          <strong>Knowledge check</strong>
+          <ul id="ceObjQuiz" class="ceObjList"></ul>
+        </div>
+        <button type="button" class="mainBtn" onclick="ceObjectivesBegin()">Begin scenario</button>
+        <button type="button" class="smallBtn ghostBtn" onclick="showScreen('ceEcgScreen')">Back</button>
+      </div>
+    </section>
+
+
+
+
+    <!-- START SCREEN -->
+    <section id="startScreen" class="screen">
+      <div class="card narrow cardDisclaimer">
+        <h1>ALS Chest Pain Simulator</h1>
+
+
+
+
+        <p>
+          This is a <strong>demo / practice simulation</strong> for learning and <strong>feedback</strong> while the project is developed.
+          It does <strong>not</strong> replace your agency’s protocols, medical direction, or formal certification.
+        </p>
+
+
+
+
+        <p>
+          <strong>Not accredited CE:</strong> Nothing in this app counts as official EMS continuing-education credit unless a separate
+          accredited program or sponsor has approved it and told you so. Lesson and quiz material is for <strong>self-study and practice only</strong>.
+        </p>
+
+
+
+
+        <p>
+          In real life, all patient care must follow your department guidelines, local protocols, and medical direction.
+        </p>
+
+
+
+
+        <p>
+          By continuing, you agree this is a simulated environment and you remain responsible for real-world clinical decisions.
+        </p>
+
+
+
+
+        <div class="ownershipBox">
+          <strong>Ownership:</strong><br />
+          This training scenario was created by Jacob Draughn.<br />
+          This content may not be copied, sold, or redistributed without permission.
+        </div>
+
+
+
+
+        <button class="mainBtn" onclick="startScenario()">Begin Scenario</button>
+      </div>
+    </section>
+
+
+
+
+    <!-- DISPATCH SCREEN -->
+    <section id="dispatchScreen" class="screen">
+      <div class="card narrow">
+        <h2>Dispatch</h2>
+        <div class="infoBox">
+          <p id="dispatchText">Dispatch information will appear here.</p>
+        </div>
+        <button class="mainBtn" onclick="goEnRoute()">Go En Route</button>
+      </div>
+    </section>
+
+
+
+
+    <!-- EN ROUTE SCREEN -->
+    <section id="enRouteScreen" class="screen">
+      <div class="card narrow">
+        <h2>En Route</h2>
+        <div class="infoBox"><p>You respond lights and sirens.</p></div>
+        <button class="mainBtn" onclick="arriveOnScene()">Arrive on Scene</button>
+      </div>
+    </section>
+
+
+
+
+    <!-- SCENE SCREEN -->
+    <section id="sceneScreen" class="screen">
+      <div class="card narrow">
+        <h2>On Scene</h2>
+        <div class="infoBox"><p id="sceneText">Patient info will appear here.</p></div>
+        <div class="infoBox"><p id="scenePrompt">Chief complaint will appear here.</p></div>
+        <button class="mainBtn" onclick="goToPrimary()">Begin Primary Survey</button>
+      </div>
+    </section>
+
+
+
+
+    <!-- PRIMARY SURVEY SCREEN -->
+    <section id="primaryScreen" class="screen">
+      <div class="card narrow">
+        <h2>Primary Survey</h2>
+        <p>What do you do first?</p>
+        <div id="primaryChoices" class="actionGrid"></div>
+      </div>
+    </section>
+
+
+
+
+    <!-- ECG SCREEN -->
+    <section id="ecgScreen" class="screen">
+      <div class="card narrow">
+        <h2>12-Lead ECG</h2>
+        <div class="infoBox">
+          <strong>Findings:</strong><br />
+          <span id="ecgFindings">ECG findings will appear here.</span>
+        </div>
+
+
+
+
+        <p>What does this indicate?</p>
+
+
+
+
+        <div class="actionGrid">
+          <button class="choiceBtn" onclick="handleECGAnswer('inferior')">Inferior STEMI</button>
+          <button class="choiceBtn" onclick="handleECGAnswer('anterior')">Anterior STEMI</button>
+          <button class="choiceBtn" onclick="handleECGAnswer('lateral')">Lateral STEMI</button>
+          <button class="choiceBtn" onclick="handleECGAnswer('nstemi')">No STEMI</button>
+        </div>
+      </div>
+    </section>
+
+
+
+
+    <!-- FOCUSED ASSESSMENT SCREEN -->
+    <section id="focusedAssessmentScreen" class="screen">
+      <div class="card">
+        <div class="layout">
+          <div class="mainPanel">
+            <div class="faTopRow">
+              <h2>Focused Assessment</h2>
+              <div class="faTopActions">
+                <button class="notesBtn" onclick="openNotes()">📝 View Notes</button>
+                <button class="mainBtn faProceedBtn" onclick="continueFromAssessment()">Move to Ambulance</button>
+              </div>
+            </div>
+
+
+
+
+            <div class="infoBox" id="faPatient"></div>
+            <div class="infoBox" id="faGeneral"></div>
+            <div class="infoBox" id="faHistory"></div>
+          </div>
+
+
+
+
+          <aside class="sidePanel">
+            <div class="vitalsBox">
+              <h3>Vitals</h3>
+              <div id="vitalsDisplayFocused">
+                BP: -- / --<br />
+                HR: --<br />
+                RR: --<br />
+                SpO2: --<br />
+                Rhythm: --
+              </div>
+
+
+
+
+              <button class="smallBtn" onclick="manualBP()">Manual BP</button>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+
+
+
+    <!-- AMBULANCE SCREEN (SIM UI) -->
+    <section id="ambulanceScreen" class="screen">
+      <div class="simShell">
+        <aside class="simLeft">
+          <button type="button" class="drawerHandleBtn drawerHandleBtn--monitor" onclick="toggleMobileDrawer('monitor')" aria-hidden="true" aria-label="Close monitor drawer"></button>
+          <div class="hudCard">
+            <h3>Monitor</h3>
+
+
+
+
+            <div id="alarmBannerAmbulance" class="alarmBanner">ALARM</div>
+
+
+
+
+            <div id="ambulanceVitalsScene" class="hudMono">
+              BP: -- / --<br />
+              HR: --<br />
+              RR: --<br />
+              SpO2: --<br />
+              Pain: --<br />
+              Rhythm: --
+            </div>
+
+
+
+
+            <canvas id="rhythmCanvasAmbulance" width="290" height="90" class="rhythmCanvas"></canvas>
+
+
+
+
+            <div id="bpCycleStatusAmbulance" class="hudSub">BP Cycle: OFF</div>
+
+
+
+
+            <div class="btnRow">
+              <button class="smallBtn" onclick="manualBP()">Manual BP</button>
+              <button class="smallBtn" onclick="cycleBP()">Cycle BP</button>
+            </div>
+          </div>
+        </aside>
+
+
+
+
+        <main class="simCenter">
+          <div class="simTop simGlassStack">
+            <div class="hudQuote" id="patientDialogueAmbulance">Patient: "..."</div>
+
+
+
+
+            <div class="tabBar simTabs">
+              <button onclick="showTab('assessment')">Assessment</button>
+              <button onclick="showTab('breathing')">Breathing</button>
+              <button onclick="showTab('meds')">Meds</button>
+              <button onclick="showTab('iv')">IV / Fluids</button>
+              <button class="transportBtn" onclick="openTransportDecision()">Transport</button>
+            </div>
+          </div>
+
+
+
+
+          <div class="simStage simStage--scene" aria-label="Simulation stage">
+            <div class="simSceneChrome" aria-hidden="true">
+              <span class="simSceneChrome__left">
+                <span class="simSceneChrome__dot" aria-hidden="true"></span>
+                <span class="simSceneChrome__title">Patient view</span>
+              </span>
+              <span class="simSceneChrome__badge">LIVE</span>
+            </div>
+            <div class="simStageFigure">
+              <img class="simStageNcOverlay" src="https://i.imgur.com/rSPrGRU.png" alt="" decoding="async" aria-hidden="true" />
+              <img class="simStageNrbOverlay" src="https://i.imgur.com/m7jpxLv.png" alt="" decoding="async" aria-hidden="true" />
+              <img class="simStageIvLeftOverlay" src="https://i.imgur.com/OxsO8md.png" alt="" decoding="async" aria-hidden="true" />
+              <img class="simStageIvRightOverlay" src="https://i.imgur.com/ygDM2Md.png" alt="" decoding="async" aria-hidden="true" />
+              <img class="simStageFluidsLeftOverlay" src="https://i.imgur.com/k2UMBRU.png" alt="" decoding="async" aria-hidden="true" />
+              <img class="simStageDripRightOverlay" src="https://i.imgur.com/Y85BAx0.png" alt="" decoding="async" aria-hidden="true" />
+            </div>
+            <!-- Phone: .simTop is hidden; quote mirrored here (synced in JS with #patientDialogueAmbulance) -->
+            <div class="hudQuote simPatientQuoteMobile" id="patientDialogueAmbulanceMobile" aria-live="polite">Patient: "..."</div>
+            <div class="hudSub simBpCycleStatusMobile" id="bpCycleStatusAmbulanceMobile" aria-live="polite">BP Cycle: OFF</div>
+            <div class="simAlarmSceneCue" id="alarmSceneCueAmbulance" role="status" aria-hidden="true" title="">
+              <span class="simAlarmSceneCue__bang" aria-hidden="true">!</span>
+              <span class="simAlarmSceneCue__text">
+                <span class="simAlarmSceneCue__title">Monitor alert</span>
+                <span class="simAlarmSceneCue__detail"></span>
+              </span>
+            </div>
+            <div class="simDrawerScrim" onclick="closeMobileDrawers()" aria-hidden="true"></div>
+            <div class="mobileEdgeTabs" aria-hidden="true">
+              <button type="button" class="edgeTab edgeTab--left edgeTab--monitor" onclick="toggleMobileDrawer('monitor')"><span class="edgeTab__label">Monitor</span><span class="edgeTab__arrow" aria-hidden="true"></span></button>
+              <button type="button" class="edgeTab edgeTab--right edgeTab--tx" onclick="toggleMobileDrawer('tx')"><span class="edgeTab__label">Treatments</span><span class="edgeTab__arrow" aria-hidden="true"></span></button>
+              <button type="button" class="edgeTab edgeTab--right edgeTab--drips" onclick="toggleMobileDrawer('drips')" title="Fluids, drips, oxygen flow"><span class="edgeTab__label">Drips / O₂</span><span class="edgeTab__arrow" aria-hidden="true"></span></button>
+            </div>
+            <div class="effectChips" aria-live="polite" aria-atomic="true"></div>
+            <div class="simFloatingTransportWrap" aria-hidden="true">
+              <button type="button" class="simFloatingTransportBtn transportBtn" onclick="openTransportDecision()">Transport</button>
+            </div>
+            <div class="simActions">
+              <button type="button" class="drawerHandleBtn drawerHandleBtn--tx" onclick="toggleMobileDrawer('tx')" aria-hidden="true" aria-label="Close treatments drawer"></button>
+              <div class="mobileTxNav" aria-hidden="true">
+                <button type="button" class="smallBtn" onclick="showTab('assessment')">Assess</button>
+                <button type="button" class="smallBtn" onclick="showTab('breathing')">O₂</button>
+                <button type="button" class="smallBtn" onclick="showTab('meds')">Meds</button>
+                <button type="button" class="smallBtn" onclick="showTab('iv')">IV / Fluids</button>
+                <button type="button" class="smallBtn notesBtn" onclick="openNotes()">Notes</button>
+              </div>
+              <div class="tabContent" data-tab="assessment">
+                <div class="actionGroupTitle">Assessment</div>
+                <button data-action="airway" onclick="airwayCheck()">Assess Airway</button>
+                <button data-action="lungs" onclick="assessLungs()">Auscultate Lungs</button>
+                <button data-action="mental" onclick="checkMentalStatus()">Check Responsiveness</button>
+              </div>
+
+
+
+
+              <div class="tabContent" data-tab="airway">
+                <button data-action="airway" onclick="airwayCheck()">Assess Airway</button>
+              </div>
+
+
+
+
+              <div class="tabContent" data-tab="breathing">
+                <div class="actionGroupTitle">Breathing</div>
+                <button data-action="nc" onclick="giveNC()">O2 Nasal Cannula</button>
+                <button data-action="nrb" onclick="giveNRB()">O2 NRB</button>
+              </div>
+
+
+
+
+              <div class="tabContent" data-tab="meds">
+                <div class="actionGroupTitle">Meds</div>
+                <button data-action="aspirin" onclick="giveAspirin()">Aspirin</button>
+                <button data-action="nitro" onclick="giveNitro()">Nitro</button>
+                <button data-action="zofran" onclick="giveZofran()">Zofran</button>
+                <button data-action="morphine" onclick="giveMorphine()">Morphine</button>
+                <button data-action="fentanyl" onclick="giveFentanyl()">Fentanyl</button>
+                <button data-action="atropine" onclick="giveAtropine()">Atropine</button>
+                <button data-action="pushEpi" onclick="givePushEpi()">Push epi</button>
+              </div>
+
+
+
+
+              <div class="tabContent" data-tab="iv">
+                <div class="actionGroupTitle">IV / Fluids</div>
+                <button data-action="iv" onclick="attemptIV()">Start IV</button>
+                <button onclick="addFluidTarget(250)">+250 mL</button>
+                <button onclick="addFluidTarget(500)">+500 mL</button>
+                <button onclick="addFluidTarget(1000)">+1000 mL</button>
+              </div>
+
+
+
+
+              <div class="simBottomBar">
+                <button class="notesBtn" onclick="openNotes()">📝 View Notes</button>
+              </div>
+            </div>
+          </div>
+        </main>
+
+
+
+
+        <aside class="simRight">
+          <button type="button" class="drawerHandleBtn drawerHandleBtn--drips" onclick="toggleMobileDrawer('drips')" aria-hidden="true" aria-label="Close drips and oxygen panel"></button>
+          <div class="hudCard">
+            <h3>Fluids</h3>
+            <div id="fluidStatusAmbulance" class="hudMono blueText">Fluids: 0 mL / 0 mL</div>
+            <div id="fluidRateAmbulance" class="hudSub">Rate: --</div>
+
+
+
+
+            <div class="hudRow">
+              <span class="hudLabel">Rate:</span>
+              <button class="smallBtn" onclick="nudgeFluidRate(-25)">-</button>
+              <input id="fluidRateSlider" type="range" min="0" max="300" step="10" value="125" oninput="setFluidRateFromUI()" />
+              <button class="smallBtn" onclick="nudgeFluidRate(25)">+</button>
+              <button class="smallBtn ghostBtn" onclick="stopFluids()">Stop</button>
+            </div>
+
+
+
+
+            <div class="hudRow">
+              <button class="smallBtn" onclick="setFluidRatePreset('kvo')">KVO</button>
+              <button class="smallBtn" onclick="setFluidRatePreset('slow')">Slow</button>
+              <button class="smallBtn" onclick="setFluidRatePreset('open')">Open</button>
+            </div>
+          </div>
+
+
+
+
+          <div class="hudCard">
+            <h3>Oxygen</h3>
+            <div id="oxygenStatusAmbulance" class="hudMono blueText">Room air</div>
+            <div id="oxygenHintAmbulance" class="hudSub">Choose NC or NRB in Breathing, then set flow.</div>
+
+
+
+
+            <div class="hudRow oxygenDialRow" id="oxygenDialRowAmbulance">
+              <span class="hudLabel">Flow:</span>
+              <button type="button" class="smallBtn" onclick="nudgeOxygenLpm(-1, false)">−</button>
+              <input
+                id="oxygenLpmSlider"
+                type="range"
+                min="1"
+                max="6"
+                step="1"
+                value="2"
+                oninput="setOxygenRateFromUI(false)"
+              />
+              <button type="button" class="smallBtn" onclick="nudgeOxygenLpm(1, false)">+</button>
+            </div>
+            <div id="oxygenLpmLabelAmbulance" class="hudSub">—</div>
+          </div>
+
+
+
+
+          <div class="hudCard">
+            <h3>Pressors</h3>
+
+
+
+
+            <div class="hudRow">
+              <select id="pressorMed" class="selectDark">
+                <option value="norepi">Norepi</option>
+                <option value="dopamine">Dopamine</option>
+                <option value="epi">Epi</option>
+              </select>
+              <button class="smallBtn" onclick="startPressor()">Start</button>
+              <button class="smallBtn ghostBtn" onclick="stopPressor()">Stop</button>
+            </div>
+
+
+
+
+            <div class="pressorPanel">
+              <div class="hudRow">
+                <span class="hudLabel">Rate:</span>
+                <button class="smallBtn" onclick="nudgePressor(-1)">-</button>
+                <input id="pressorRate" type="range" min="0" max="20" value="0" oninput="setPressorRateFromUI()" />
+                <button class="smallBtn" onclick="nudgePressor(1)">+</button>
+              </div>
+              <div id="pressorStatus" class="hudSub">Off</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+
+
+
+    <!-- TRANSPORT DECISION SCREEN -->
+    <section id="transportDecisionScreen" class="screen">
+      <div class="card narrow">
+        <h2>Transport Decision</h2>
+        <div class="actionGrid">
+          <button class="mainBtn" onclick="chooseTransport('emergent')">Emergent</button>
+          <button class="mainBtn" onclick="chooseTransport('non-emergent')">Non-Emergent</button>
+        </div>
+      </div>
+    </section>
+
+
+
+
+    <!-- DESTINATION SCREEN -->
+    <section id="destinationScreen" class="screen">
+      <div class="card narrow">
+        <h2>Select Destination</h2>
+        <div class="actionGrid">
+          <button class="mainBtn" onclick="chooseDestination('local')">Local Hospital</button>
+          <button class="mainBtn" onclick="chooseDestination('cath')">Hospital with Cath Lab</button>
+        </div>
+      </div>
+    </section>
+
+
+
+
+    <!-- TRANSPORT SCREEN (SIM UI) -->
+    <section id="transportScreen" class="screen">
+      <div class="simShell">
+        <aside class="simLeft">
+          <button type="button" class="drawerHandleBtn drawerHandleBtn--monitor" onclick="toggleMobileDrawer('monitor')" aria-hidden="true" aria-label="Close monitor drawer"></button>
+          <div class="hudCard">
+            <h3>Monitor</h3>
+
+
+
+
+            <div id="alarmBannerTransport" class="alarmBanner">ALARM</div>
+
+
+
+
+            <div id="ambulanceVitalsTransport" class="hudMono">
+              BP: -- / --<br />
+              HR: --<br />
+              RR: --<br />
+              SpO2: --<br />
+              Pain: --<br />
+              Rhythm: --
+            </div>
+
+
+
+
+            <canvas id="rhythmCanvasTransport" width="290" height="90" class="rhythmCanvas"></canvas>
+
+
+
+
+            <div id="bpCycleStatusTransport" class="hudSub">BP Cycle: OFF</div>
+
+
+
+
+            <div class="btnRow">
+              <button class="smallBtn" onclick="manualBP()">Manual BP</button>
+              <button class="smallBtn" onclick="cycleBP()">Cycle BP</button>
+            </div>
+          </div>
+        </aside>
+
+
+
+
+        <main class="simCenter">
+          <div class="simTop simGlassStack">
+            <div class="hudQuote" id="patientDialogueTransport">Patient: "..."</div>
+            <div class="hudTimer" id="transportTimer">Time Remaining: --</div>
+
+
+
+
+            <div class="tabBar simTabs">
+              <button onclick="showTab('assessment')">Assessment</button>
+              <button onclick="showTab('breathing')">Breathing</button>
+              <button onclick="showTab('meds')">Meds</button>
+              <button onclick="showTab('iv')">IV / Fluids</button>
+            </div>
+          </div>
+
+
+
+
+          <div class="simStage simStage--scene" aria-label="Simulation stage">
+            <div class="simSceneChrome" aria-hidden="true">
+              <span class="simSceneChrome__left">
+                <span class="simSceneChrome__dot" aria-hidden="true"></span>
+                <span class="simSceneChrome__title">Patient view</span>
+              </span>
+              <span class="simSceneChrome__badge">LIVE</span>
+            </div>
+            <div class="simStageFigure">
+              <img class="simStageNcOverlay" src="https://i.imgur.com/rSPrGRU.png" alt="" decoding="async" aria-hidden="true" />
+              <img class="simStageNrbOverlay" src="https://i.imgur.com/m7jpxLv.png" alt="" decoding="async" aria-hidden="true" />
+              <img class="simStageIvLeftOverlay" src="https://i.imgur.com/OxsO8md.png" alt="" decoding="async" aria-hidden="true" />
+              <img class="simStageIvRightOverlay" src="https://i.imgur.com/ygDM2Md.png" alt="" decoding="async" aria-hidden="true" />
+              <img class="simStageFluidsLeftOverlay" src="https://i.imgur.com/k2UMBRU.png" alt="" decoding="async" aria-hidden="true" />
+              <img class="simStageDripRightOverlay" src="https://i.imgur.com/Y85BAx0.png" alt="" decoding="async" aria-hidden="true" />
+            </div>
+            <!-- Phone: .simTop is hidden; quote + timer mirrored (synced in JS) -->
+            <div class="hudQuote simPatientQuoteMobile" id="patientDialogueTransportMobile" aria-live="polite">Patient: "..."</div>
+            <div class="hudTimer simTransportTimerMobile" id="transportTimerMobile" aria-live="polite">Time Remaining: --</div>
+            <div class="hudSub simBpCycleStatusMobile" id="bpCycleStatusTransportMobile" aria-live="polite">BP Cycle: OFF</div>
+            <div class="simAlarmSceneCue" id="alarmSceneCueTransport" role="status" aria-hidden="true" title="">
+              <span class="simAlarmSceneCue__bang" aria-hidden="true">!</span>
+              <span class="simAlarmSceneCue__text">
+                <span class="simAlarmSceneCue__title">Monitor alert</span>
+                <span class="simAlarmSceneCue__detail"></span>
+              </span>
+            </div>
+            <div class="simDrawerScrim" onclick="closeMobileDrawers()" aria-hidden="true"></div>
+            <div class="mobileEdgeTabs" aria-hidden="true">
+              <button type="button" class="edgeTab edgeTab--left edgeTab--monitor" onclick="toggleMobileDrawer('monitor')"><span class="edgeTab__label">Monitor</span><span class="edgeTab__arrow" aria-hidden="true"></span></button>
+              <button type="button" class="edgeTab edgeTab--right edgeTab--tx" onclick="toggleMobileDrawer('tx')"><span class="edgeTab__label">Treatments</span><span class="edgeTab__arrow" aria-hidden="true"></span></button>
+              <button type="button" class="edgeTab edgeTab--right edgeTab--drips" onclick="toggleMobileDrawer('drips')" title="Fluids, drips, oxygen flow"><span class="edgeTab__label">Drips / O₂</span><span class="edgeTab__arrow" aria-hidden="true"></span></button>
+            </div>
+            <div class="effectChips" aria-live="polite" aria-atomic="true"></div>
+            <div class="simActions">
+              <button type="button" class="drawerHandleBtn drawerHandleBtn--tx" onclick="toggleMobileDrawer('tx')" aria-hidden="true" aria-label="Close treatments drawer"></button>
+              <div class="mobileTxNav" aria-hidden="true">
+                <button type="button" class="smallBtn" onclick="showTab('assessment')">Assess</button>
+                <button type="button" class="smallBtn" onclick="showTab('breathing')">O₂</button>
+                <button type="button" class="smallBtn" onclick="showTab('meds')">Meds</button>
+                <button type="button" class="smallBtn" onclick="showTab('iv')">IV / Fluids</button>
+                <button type="button" class="smallBtn notesBtn" onclick="openNotes()">Notes</button>
+              </div>
+              <div class="tabContent" data-tab="assessment">
+                <div class="actionGroupTitle">Assessment</div>
+                <button data-action="airway" onclick="airwayCheck()">Assess Airway</button>
+                <button data-action="lungs" onclick="assessLungs()">Auscultate Lungs</button>
+                <button data-action="mental" onclick="checkMentalStatus()">Check Responsiveness</button>
+              </div>
+
+
+
+
+              <div class="tabContent" data-tab="breathing">
+                <div class="actionGroupTitle">Breathing</div>
+                <button data-action="nc" onclick="giveNC()">O2 Nasal Cannula</button>
+                <button data-action="nrb" onclick="giveNRB()">O2 NRB</button>
+              </div>
+
+
+
+
+              <div class="tabContent" data-tab="meds">
+                <div class="actionGroupTitle">Meds</div>
+                <button data-action="aspirin" onclick="giveAspirin()">Aspirin</button>
+                <button data-action="nitro" onclick="giveNitro()">Nitro</button>
+                <button data-action="zofran" onclick="giveZofran()">Zofran</button>
+                <button data-action="morphine" onclick="giveMorphine()">Morphine</button>
+                <button data-action="fentanyl" onclick="giveFentanyl()">Fentanyl</button>
+                <button data-action="atropine" onclick="giveAtropine()">Atropine</button>
+                <button data-action="pushEpi" onclick="givePushEpi()">Push epi</button>
+              </div>
+
+
+
+
+              <div class="tabContent" data-tab="iv">
+                <div class="actionGroupTitle">IV / Fluids</div>
+                <button data-action="iv" onclick="attemptIV()">Start IV</button>
+                <button onclick="addFluidTarget(250)">+250 mL</button>
+                <button onclick="addFluidTarget(500)">+500 mL</button>
+                <button onclick="addFluidTarget(1000)">+1000 mL</button>
+              </div>
+
+
+
+
+              <div class="simBottomBar">
+                <button class="notesBtn" onclick="openNotes()">📝 View Notes</button>
+              </div>
+            </div>
+          </div>
+        </main>
+
+
+
+
+        <aside class="simRight">
+          <button type="button" class="drawerHandleBtn drawerHandleBtn--drips" onclick="toggleMobileDrawer('drips')" aria-hidden="true" aria-label="Close drips and oxygen panel"></button>
+          <div class="hudCard">
+            <h3>Fluids</h3>
+            <div id="fluidStatusTransport" class="hudMono blueText">Fluids: 0 mL / 0 mL</div>
+            <div id="fluidRateTransport" class="hudSub">Rate: --</div>
+
+
+
+
+            <div class="hudRow">
+              <span class="hudLabel">Rate:</span>
+              <button class="smallBtn" onclick="nudgeFluidRate(-25)">-</button>
+              <input id="fluidRateSlider2" type="range" min="0" max="300" step="10" value="125" oninput="setFluidRateFromUI(true)" />
+              <button class="smallBtn" onclick="nudgeFluidRate(25)">+</button>
+              <button class="smallBtn ghostBtn" onclick="stopFluids()">Stop</button>
+            </div>
+
+
+
+
+            <div class="hudRow">
+              <button class="smallBtn" onclick="setFluidRatePreset('kvo')">KVO</button>
+              <button class="smallBtn" onclick="setFluidRatePreset('slow')">Slow</button>
+              <button class="smallBtn" onclick="setFluidRatePreset('open')">Open</button>
+            </div>
+          </div>
+
+
+
+
+          <div class="hudCard">
+            <h3>Oxygen</h3>
+            <div id="oxygenStatusTransport" class="hudMono blueText">Room air</div>
+            <div id="oxygenHintTransport" class="hudSub">Choose NC or NRB in Breathing, then set flow.</div>
+
+
+
+
+            <div class="hudRow oxygenDialRow" id="oxygenDialRowTransport">
+              <span class="hudLabel">Flow:</span>
+              <button type="button" class="smallBtn" onclick="nudgeOxygenLpm(-1, true)">−</button>
+              <input
+                id="oxygenLpmSlider2"
+                type="range"
+                min="1"
+                max="6"
+                step="1"
+                value="2"
+                oninput="setOxygenRateFromUI(true)"
+              />
+              <button type="button" class="smallBtn" onclick="nudgeOxygenLpm(1, true)">+</button>
+            </div>
+            <div id="oxygenLpmLabelTransport" class="hudSub">—</div>
+          </div>
+
+
+
+
+          <div class="hudCard">
+            <h3>Pressors</h3>
+
+
+
+
+            <div class="hudRow">
+              <select id="pressorMed2" class="selectDark">
+                <option value="norepi">Norepi</option>
+                <option value="dopamine">Dopamine</option>
+                <option value="epi">Epi</option>
+              </select>
+              <button class="smallBtn" onclick="startPressor(true)">Start</button>
+              <button class="smallBtn ghostBtn" onclick="stopPressor()">Stop</button>
+            </div>
+
+
+
+
+            <div class="pressorPanel">
+              <div class="hudRow">
+                <span class="hudLabel">Rate:</span>
+                <button class="smallBtn" onclick="nudgePressor(-1)">-</button>
+                <input id="pressorRate2" type="range" min="0" max="20" value="0" oninput="setPressorRateFromUI(true)" />
+                <button class="smallBtn" onclick="nudgePressor(1)">+</button>
+              </div>
+              <div id="pressorStatus2" class="hudSub">Off</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+
+
+
+    <!-- NOTES MODAL (scroll + sticky close) -->
+    <div id="notesPanel" class="modal">
+      <div class="modalContent modalContentTall">
+        <h2>Patient Notes</h2>
+
+
+
+
+        <div id="notesContent" class="notesScroll">
+          Notes will appear here.
+        </div>
+
+
+
+
+        <div class="modalFooter">
+          <button class="mainBtn" onclick="closeNotes()">Close</button>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <!-- RESULT SCREEN -->
+    <section id="endScreen" class="screen">
+      <div class="card narrow">
+        <h2>Scenario Complete</h2>
+
+
+
+
+        <div id="finalSummary" class="infoBox">Results will appear here.</div>
+
+
+
+
+        <button class="mainBtn" onclick="restartFromEndScreen()">Restart</button>
+        <button type="button" class="smallBtn ghostBtn" onclick="goToLauncher()">Choose mode</button>
+        <button class="mainBtn" onclick="openNotes()">View Notes</button>
+        <p id="ceLessonGateMsg" class="ceLessonGateMsg" style="display:none"></p>
+        <button type="button" id="lessonReviewBtn" class="mainBtn" onclick="openLessonFlow()">Lesson &amp; review</button>
+
+
+
+
+        <a class="feedbackLink" href="https://docs.google.com/forms/d/e/1FAIpQLSer58PPOmQ6sj5fPoqfMVhgolMZnpe4-K2E4-so5DhBooYc-Q/viewform?usp=dialog" target="_blank" rel="noreferrer">
+          Leave Feedback
+        </a>
+      </div>
+    </section>
+
+
+
+
+    <!-- LESSON (timed slides) -->
+    <section id="lessonScreen" class="screen">
+      <div class="card narrow lessonCard">
+        <h2 id="lessonHeadline">Case review</h2>
+        <p class="lessonCaseTag" id="lessonCaseTag"></p>
+        <p class="lessonProgress" id="lessonProgress"></p>
+        <ul id="lessonBullets" class="lessonBullets"></ul>
+        <p class="lessonTimerNote" id="lessonTimerNote" aria-live="polite"></p>
+        <button type="button" id="lessonNextBtn" class="mainBtn" disabled>Next</button>
+        <button type="button" class="smallBtn ghostBtn lessonBackBtn" onclick="closeLessonFlow()">Back to results</button>
+      </div>
+    </section>
+
+
+
+
+    <!-- QUIZ -->
+    <section id="quizScreen" class="screen">
+      <div class="card narrow">
+        <h2>Knowledge check</h2>
+        <p class="quizHint">Five questions. You need at least <strong>4 correct</strong> to unlock the demo certificate.</p>
+        <div id="quizQuestions" class="quizQuestions"></div>
+        <button type="button" class="mainBtn" onclick="submitLessonQuiz()">Submit answers</button>
+        <p id="quizFeedback" class="quizFeedback" role="status"></p>
+        <div class="quizActions">
+          <button type="button" id="quizRetryBtn" class="mainBtn" style="display:none" onclick="retryLessonQuiz()">Retake quiz</button>
+          <button type="button" id="quizToCertBtn" class="mainBtn" style="display:none" onclick="goToCertName()">Continue to certificate</button>
+        </div>
+        <button type="button" class="smallBtn ghostBtn" onclick="closeLessonFlowFromQuiz()">Back to results</button>
+      </div>
+    </section>
+
+
+
+
+    <!-- CERTIFICATE: name -->
+    <section id="certNameScreen" class="screen">
+      <div class="card narrow">
+        <h2>Demo certificate</h2>
+        <p class="certIntro">
+          Enter the name to show on the <strong>mock</strong> screen. Demo/testing only — not a real credential.
+        </p>
+        <label class="certLabel" for="certLearnerName">Your name</label>
+        <input type="text" id="certLearnerName" class="certNameInput" maxlength="80" placeholder="e.g., Alex Smith" autocomplete="name" />
+        <button type="button" class="mainBtn" onclick="showCertificate()">Show certificate</button>
+        <button type="button" class="smallBtn ghostBtn" onclick="backFromCertName()">Back</button>
+      </div>
+    </section>
+
+
+
+
+    <!-- CERTIFICATE: display -->
+    <section id="certScreen" class="screen">
+      <div class="card narrow certPage">
+        <div id="certPrintArea" class="certPrintArea">
+          <div class="certDemoRibbon">Demo / mock only — not formal training</div>
+          <h2 class="certTitle">ALS Chest Pain Simulator</h2>
+          <p class="certSubtitle">Scenario completion (demonstration)</p>
+          <p class="certNameLine" id="certNameDisplay"></p>
+          <p class="certMeta"><span id="certCaseDisplay"></span> · <span id="certDateDisplay"></span></p>
+          <p class="certBodyLine">
+            This screen confirms you finished the lesson and passed the knowledge check in this <strong>training simulation</strong>.
+          </p>
+          <div class="certDisclaimer">
+            <strong>Disclaimer:</strong> This is a <strong>demo / mock certificate for testing purposes only</strong>.
+            It does <strong>not</strong> certify you, does <strong>not</strong> count as formal training or credentialing,
+            does <strong>not</strong> count toward official continuing education hours,
+            and is <strong>not</strong> a substitute for your agency’s protocols or medical direction.
+          </div>
+        </div>
+        <div class="certActions">
+          <button type="button" class="mainBtn" onclick="window.print()">Print / save as PDF</button>
+          <button type="button" class="mainBtn ghostBtn" onclick="closeLessonFlow()">Back to results</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+
+
+  <script src="script.js"></script>
+</body>
+</html>
