@@ -1,4 +1,4 @@
-﻿<html lang="en">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,20 +17,14 @@
 </head>
 
 
-
-
 <body>
   <input type="hidden" id="scenarioCaseType" value="" />
-
-
 
 
   <div id="app">
     <div id="feedbackBox" class="feedbackBox"></div>
     <!-- Legacy dim layer (unused): closing uses .simDrawerScrim inside each sim stage on phone -->
     <div id="mobileDrawerBackdrop" class="mobileDrawerBackdrop" aria-hidden="true"></div>
-
-
 
 
     <!-- MODE SELECT (first screen) -->
@@ -45,8 +39,6 @@
         </div>
 
 
-
-
         <div class="modePick">
           <div class="modeCard modeCardPractice">
             <h2>Practice mode</h2>
@@ -56,8 +48,6 @@
             </p>
             <button type="button" class="mainBtn" onclick="choosePracticeMode()">Practice mode</button>
           </div>
-
-
 
 
           <div class="modeCard modeCardCe">
@@ -72,15 +62,11 @@
         </div>
 
 
-
-
         <p class="launcherFoot">
           Educational simulation only—not a substitute for protocols, medical direction, or your department’s authorization to practice.
         </p>
       </div>
     </section>
-
-
 
 
     <!-- CE: acknowledge (before ECG pick) -->
@@ -102,8 +88,6 @@
     </section>
 
 
-
-
     <!-- CE: pick ECG type -->
     <section id="ceEcgScreen" class="screen">
       <div class="card narrow">
@@ -120,7 +104,6 @@
         <button type="button" class="smallBtn ghostBtn" onclick="showScreen('ceAckScreen')">Back</button>
       </div>
     </section>
-
 
     <!-- CE: objectives (after ECG pick) -->
     <section id="ceObjectivesScreen" class="screen">
@@ -140,14 +123,10 @@
     </section>
 
 
-
-
     <!-- START SCREEN -->
     <section id="startScreen" class="screen">
       <div class="card narrow cardDisclaimer">
         <h1>ALS Chest Pain Simulator</h1>
-
-
 
 
         <p>
@@ -156,14 +135,10 @@
         </p>
 
 
-
-
         <p>
           <strong>Not accredited CE:</strong> Nothing in this app counts as official EMS continuing-education credit unless a separate
           accredited program or sponsor has approved it and told you so. Lesson and quiz material is for <strong>self-study and practice only</strong>.
         </p>
-
-
 
 
         <p>
@@ -171,13 +146,9 @@
         </p>
 
 
-
-
         <p>
           By continuing, you agree this is a simulated environment and you remain responsible for real-world clinical decisions.
         </p>
-
-
 
 
         <div class="ownershipBox">
@@ -187,13 +158,9 @@
         </div>
 
 
-
-
         <button class="mainBtn" onclick="startScenario()">Begin Scenario</button>
       </div>
     </section>
-
-
 
 
     <!-- DISPATCH SCREEN -->
@@ -208,8 +175,6 @@
     </section>
 
 
-
-
     <!-- EN ROUTE SCREEN -->
     <section id="enRouteScreen" class="screen">
       <div class="card narrow">
@@ -218,8 +183,6 @@
         <button class="mainBtn" onclick="arriveOnScene()">Arrive on Scene</button>
       </div>
     </section>
-
-
 
 
     <!-- SCENE SCREEN -->
@@ -233,8 +196,6 @@
     </section>
 
 
-
-
     <!-- PRIMARY SURVEY SCREEN -->
     <section id="primaryScreen" class="screen">
       <div class="card narrow">
@@ -243,8 +204,6 @@
         <div id="primaryChoices" class="actionGrid"></div>
       </div>
     </section>
-
-
 
 
     <!-- ECG SCREEN -->
@@ -257,11 +216,7 @@
         </div>
 
 
-
-
         <p>What does this indicate?</p>
-
-
 
 
         <div class="actionGrid">
@@ -272,8 +227,6 @@
         </div>
       </div>
     </section>
-
-
 
 
     <!-- FOCUSED ASSESSMENT SCREEN -->
@@ -290,14 +243,10 @@
             </div>
 
 
-
-
             <div class="infoBox" id="faPatient"></div>
             <div class="infoBox" id="faGeneral"></div>
             <div class="infoBox" id="faHistory"></div>
           </div>
-
-
 
 
           <aside class="sidePanel">
@@ -312,16 +261,12 @@
               </div>
 
 
-
-
               <button class="smallBtn" onclick="manualBP()">Manual BP</button>
             </div>
           </aside>
         </div>
       </div>
     </section>
-
-
 
 
     <!-- AMBULANCE SCREEN (SIM UI) -->
@@ -333,11 +278,7 @@
             <h3>Monitor</h3>
 
 
-
-
             <div id="alarmBannerAmbulance" class="alarmBanner">ALARM</div>
-
-
 
 
             <div id="ambulanceVitalsScene" class="hudMono">
@@ -350,16 +291,10 @@
             </div>
 
 
-
-
             <canvas id="rhythmCanvasAmbulance" width="290" height="90" class="rhythmCanvas"></canvas>
 
 
-
-
             <div id="bpCycleStatusAmbulance" class="hudSub">BP Cycle: OFF</div>
-
-
 
 
             <div class="btnRow">
@@ -370,13 +305,9 @@
         </aside>
 
 
-
-
         <main class="simCenter">
           <div class="simTop simGlassStack">
             <div class="hudQuote" id="patientDialogueAmbulance">Patient: "..."</div>
-
-
 
 
             <div class="tabBar simTabs">
@@ -387,8 +318,6 @@
               <button class="transportBtn" onclick="openTransportDecision()">Transport</button>
             </div>
           </div>
-
-
 
 
           <div class="simStage simStage--scene" aria-label="Simulation stage">
@@ -444,13 +373,9 @@
               </div>
 
 
-
-
               <div class="tabContent" data-tab="airway">
                 <button data-action="airway" onclick="airwayCheck()">Assess Airway</button>
               </div>
-
-
 
 
               <div class="tabContent" data-tab="breathing">
@@ -458,8 +383,6 @@
                 <button data-action="nc" onclick="giveNC()">O2 Nasal Cannula</button>
                 <button data-action="nrb" onclick="giveNRB()">O2 NRB</button>
               </div>
-
-
 
 
               <div class="tabContent" data-tab="meds">
@@ -474,8 +397,6 @@
               </div>
 
 
-
-
               <div class="tabContent" data-tab="iv">
                 <div class="actionGroupTitle">IV / Fluids</div>
                 <button data-action="iv" onclick="attemptIV()">Start IV</button>
@@ -483,8 +404,6 @@
                 <button onclick="addFluidTarget(500)">+500 mL</button>
                 <button onclick="addFluidTarget(1000)">+1000 mL</button>
               </div>
-
-
 
 
               <div class="simBottomBar">
@@ -495,16 +414,12 @@
         </main>
 
 
-
-
         <aside class="simRight">
           <button type="button" class="drawerHandleBtn drawerHandleBtn--drips" onclick="toggleMobileDrawer('drips')" aria-hidden="true" aria-label="Close drips and oxygen panel"></button>
           <div class="hudCard">
             <h3>Fluids</h3>
             <div id="fluidStatusAmbulance" class="hudMono blueText">Fluids: 0 mL / 0 mL</div>
             <div id="fluidRateAmbulance" class="hudSub">Rate: --</div>
-
-
 
 
             <div class="hudRow">
@@ -516,8 +431,6 @@
             </div>
 
 
-
-
             <div class="hudRow">
               <button class="smallBtn" onclick="setFluidRatePreset('kvo')">KVO</button>
               <button class="smallBtn" onclick="setFluidRatePreset('slow')">Slow</button>
@@ -526,14 +439,10 @@
           </div>
 
 
-
-
           <div class="hudCard">
             <h3>Oxygen</h3>
             <div id="oxygenStatusAmbulance" class="hudMono blueText">Room air</div>
             <div id="oxygenHintAmbulance" class="hudSub">Choose NC or NRB in Breathing, then set flow.</div>
-
-
 
 
             <div class="hudRow oxygenDialRow" id="oxygenDialRowAmbulance">
@@ -554,12 +463,8 @@
           </div>
 
 
-
-
           <div class="hudCard">
             <h3>Pressors</h3>
-
-
 
 
             <div class="hudRow">
@@ -571,8 +476,6 @@
               <button class="smallBtn" onclick="startPressor()">Start</button>
               <button class="smallBtn ghostBtn" onclick="stopPressor()">Stop</button>
             </div>
-
-
 
 
             <div class="pressorPanel">
@@ -590,8 +493,6 @@
     </section>
 
 
-
-
     <!-- TRANSPORT DECISION SCREEN -->
     <section id="transportDecisionScreen" class="screen">
       <div class="card narrow">
@@ -602,8 +503,6 @@
         </div>
       </div>
     </section>
-
-
 
 
     <!-- DESTINATION SCREEN -->
@@ -618,8 +517,6 @@
     </section>
 
 
-
-
     <!-- TRANSPORT SCREEN (SIM UI) -->
     <section id="transportScreen" class="screen">
       <div class="simShell">
@@ -629,11 +526,7 @@
             <h3>Monitor</h3>
 
 
-
-
             <div id="alarmBannerTransport" class="alarmBanner">ALARM</div>
-
-
 
 
             <div id="ambulanceVitalsTransport" class="hudMono">
@@ -646,16 +539,10 @@
             </div>
 
 
-
-
             <canvas id="rhythmCanvasTransport" width="290" height="90" class="rhythmCanvas"></canvas>
 
 
-
-
             <div id="bpCycleStatusTransport" class="hudSub">BP Cycle: OFF</div>
-
-
 
 
             <div class="btnRow">
@@ -666,14 +553,10 @@
         </aside>
 
 
-
-
         <main class="simCenter">
           <div class="simTop simGlassStack">
             <div class="hudQuote" id="patientDialogueTransport">Patient: "..."</div>
             <div class="hudTimer" id="transportTimer">Time Remaining: --</div>
-
-
 
 
             <div class="tabBar simTabs">
@@ -683,8 +566,6 @@
               <button onclick="showTab('iv')">IV / Fluids</button>
             </div>
           </div>
-
-
 
 
           <div class="simStage simStage--scene" aria-label="Simulation stage">
@@ -738,15 +619,11 @@
               </div>
 
 
-
-
               <div class="tabContent" data-tab="breathing">
                 <div class="actionGroupTitle">Breathing</div>
                 <button data-action="nc" onclick="giveNC()">O2 Nasal Cannula</button>
                 <button data-action="nrb" onclick="giveNRB()">O2 NRB</button>
               </div>
-
-
 
 
               <div class="tabContent" data-tab="meds">
@@ -761,8 +638,6 @@
               </div>
 
 
-
-
               <div class="tabContent" data-tab="iv">
                 <div class="actionGroupTitle">IV / Fluids</div>
                 <button data-action="iv" onclick="attemptIV()">Start IV</button>
@@ -770,8 +645,6 @@
                 <button onclick="addFluidTarget(500)">+500 mL</button>
                 <button onclick="addFluidTarget(1000)">+1000 mL</button>
               </div>
-
-
 
 
               <div class="simBottomBar">
@@ -782,16 +655,12 @@
         </main>
 
 
-
-
         <aside class="simRight">
           <button type="button" class="drawerHandleBtn drawerHandleBtn--drips" onclick="toggleMobileDrawer('drips')" aria-hidden="true" aria-label="Close drips and oxygen panel"></button>
           <div class="hudCard">
             <h3>Fluids</h3>
             <div id="fluidStatusTransport" class="hudMono blueText">Fluids: 0 mL / 0 mL</div>
             <div id="fluidRateTransport" class="hudSub">Rate: --</div>
-
-
 
 
             <div class="hudRow">
@@ -803,8 +672,6 @@
             </div>
 
 
-
-
             <div class="hudRow">
               <button class="smallBtn" onclick="setFluidRatePreset('kvo')">KVO</button>
               <button class="smallBtn" onclick="setFluidRatePreset('slow')">Slow</button>
@@ -813,14 +680,10 @@
           </div>
 
 
-
-
           <div class="hudCard">
             <h3>Oxygen</h3>
             <div id="oxygenStatusTransport" class="hudMono blueText">Room air</div>
             <div id="oxygenHintTransport" class="hudSub">Choose NC or NRB in Breathing, then set flow.</div>
-
-
 
 
             <div class="hudRow oxygenDialRow" id="oxygenDialRowTransport">
@@ -841,12 +704,8 @@
           </div>
 
 
-
-
           <div class="hudCard">
             <h3>Pressors</h3>
-
-
 
 
             <div class="hudRow">
@@ -858,8 +717,6 @@
               <button class="smallBtn" onclick="startPressor(true)">Start</button>
               <button class="smallBtn ghostBtn" onclick="stopPressor()">Stop</button>
             </div>
-
-
 
 
             <div class="pressorPanel">
@@ -877,21 +734,15 @@
     </section>
 
 
-
-
     <!-- NOTES MODAL (scroll + sticky close) -->
     <div id="notesPanel" class="modal">
       <div class="modalContent modalContentTall">
         <h2>Patient Notes</h2>
 
 
-
-
         <div id="notesContent" class="notesScroll">
           Notes will appear here.
         </div>
-
-
 
 
         <div class="modalFooter">
@@ -901,19 +752,13 @@
     </div>
 
 
-
-
     <!-- RESULT SCREEN -->
     <section id="endScreen" class="screen">
       <div class="card narrow">
         <h2>Scenario Complete</h2>
 
 
-
-
         <div id="finalSummary" class="infoBox">Results will appear here.</div>
-
-
 
 
         <button class="mainBtn" onclick="restartFromEndScreen()">Restart</button>
@@ -923,15 +768,11 @@
         <button type="button" id="lessonReviewBtn" class="mainBtn" onclick="openLessonFlow()">Lesson &amp; review</button>
 
 
-
-
         <a class="feedbackLink" href="https://docs.google.com/forms/d/e/1FAIpQLSer58PPOmQ6sj5fPoqfMVhgolMZnpe4-K2E4-so5DhBooYc-Q/viewform?usp=dialog" target="_blank" rel="noreferrer">
           Leave Feedback
         </a>
       </div>
     </section>
-
-
 
 
     <!-- LESSON (timed slides) -->
@@ -946,8 +787,6 @@
         <button type="button" class="smallBtn ghostBtn lessonBackBtn" onclick="closeLessonFlow()">Back to results</button>
       </div>
     </section>
-
-
 
 
     <!-- QUIZ -->
@@ -967,8 +806,6 @@
     </section>
 
 
-
-
     <!-- CERTIFICATE: name -->
     <section id="certNameScreen" class="screen">
       <div class="card narrow">
@@ -982,8 +819,6 @@
         <button type="button" class="smallBtn ghostBtn" onclick="backFromCertName()">Back</button>
       </div>
     </section>
-
-
 
 
     <!-- CERTIFICATE: display -->
@@ -1012,8 +847,6 @@
       </div>
     </section>
   </div>
-
-
 
 
   <script src="script.js"></script>
