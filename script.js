@@ -1,7 +1,5 @@
-﻿let lastBPTime = 0;
+let lastBPTime = 0;
 let lastActionTime = {};
-
-
 
 
 const actionOnce = new Set();
@@ -10,8 +8,6 @@ function logActionOnce(key, text) {
   actionOnce.add(key);
   logAction(text);
 }
-
-
 
 
 // --- UX helpers (chips, sounds, tooltips) ---
@@ -61,8 +57,6 @@ function soundBad() {
 }
 
 
-
-
 function getActiveSimStage() {
   const s = document.querySelector(".screen.active");
   if (!s) return null;
@@ -75,21 +69,15 @@ function pushEffectChip(text, tone = "good") {
   if (!wrap) return;
 
 
-
-
   const el = document.createElement("div");
   el.className = `effectChip effectChip--${tone}`;
   el.innerHTML = `<span class="chipIcon" aria-hidden="true"></span><span>${text}</span>`;
   wrap.appendChild(el);
 
 
-
-
   // cap chips to avoid clutter
   const max = 4;
   while (wrap.children.length > max) wrap.removeChild(wrap.firstChild);
-
-
 
 
   setTimeout(() => {
@@ -101,8 +89,6 @@ function pushEffectChip(text, tone = "good") {
 }
 
 
-
-
 function snapshotVitals() {
   return {
     spo2: sim.vitals.spo2,
@@ -112,8 +98,6 @@ function snapshotVitals() {
     pain: sim.patient.pain,
   };
 }
-
-
 
 
 let sim = {
@@ -129,15 +113,11 @@ let sim = {
   _lungFluidStrain: 0,
 
 
-
-
   /** "practice" | "ce" | null — set from launcher; not cleared by resetSim() */
   runMode: null,
   /** CE only: forced ECG pattern until scenario restarts from launcher */
   ceForcedCaseType: null,
   lastScenarioScore: null,
-
-
 
 
   caseType: null,
@@ -146,12 +126,8 @@ let sim = {
   transportSecondsRemaining: 0,
 
 
-
-
   badActions: 0,
   recklessActions: 0,
-
-
 
 
   patient: {
@@ -160,12 +136,8 @@ let sim = {
     shortnessOfBreath: false,
 
 
-
-
     history: [],
     allergy: "No allergies",
-
-
 
 
     chf: false,
@@ -173,25 +145,17 @@ let sim = {
     rvInvolvement: false,
 
 
-
-
     nausea: false,
     lungSounds: "clear",
     mentalStatus: "alert",
-
-
 
 
     rhythmMode: "sinus",
     rhythmLabel: "Sinus rhythm",
 
 
-
-
     currentDialogue: "",
     pain: 0,
-
-
 
 
     /** null | "mild" | "moderate" | "severe" — STEMI cases only; raises stakes + drift. */
@@ -202,8 +166,6 @@ let sim = {
     symptomaticBrady: false,
 
 
-
-
     /** Severe STEMI: drift may start later (scene vs transport). */
     pendingHemodynamicDrift: 0,
     /** "immediate" | "delayed_scene" | "transport" */
@@ -211,19 +173,13 @@ let sim = {
   },
 
 
-
-
   vitals: { hr: 0, spo2: 0, sbp: 0, dbp: 0, rr: 0 },
   baselineVitals: {},
   displayedBp: { sbp: null, dbp: null },
 
 
-
-
   vitalsInterval: null,
   transportInterval: null,
-
-
 
 
   bpCycleOn: false,
@@ -234,22 +190,16 @@ let sim = {
   bpCycleNextReadAt: 0,
 
 
-
-
   hypotensionSeconds: 0,
   hypoxiaSeconds: 0,
   /** Seconds (1/tick in vitals loop) patient was alert — used so aspirin isn’t scored if they were altered/unresponsive almost the whole time. */
   alertContactSeconds: 0,
 
 
-
-
   interventions: {
     oxygenMode: "room_air",
     /** Meaningful when NC (1–6) or NRB (10–15). */
     oxygenLpm: 0,
-
-
 
 
     ivEstablished: false,
@@ -262,14 +212,10 @@ let sim = {
     pressorLineUsed: false,
 
 
-
-
     fluidRunning: false,
     fluidTarget: 0,
     fluidGiven: 0,
     fluidRateMlPerMin: 0,
-
-
 
 
     aspirinGiven: false,
@@ -279,20 +225,14 @@ let sim = {
     atropineCount: 0,
 
 
-
-
     pressorActive: false,
     pressorMed: "norepi",
     pressorRate: 0,
 
 
-
-
     /** Push-dose epinephrine (quick BP bump); scenario-limited. */
     pushEpiCount: 0,
   },
-
-
 
 
   alarms: {
@@ -302,13 +242,9 @@ let sim = {
   },
 
 
-
-
   /** Array of { tMs: number, text: string } */
   actionsLog: [],
 };
-
-
 
 
 function clearSimEffectChips() {
@@ -316,8 +252,6 @@ function clearSimEffectChips() {
     el.innerHTML = "";
   });
 }
-
-
 
 
 function setFeedbackToastForScreen(screenId) {
@@ -335,8 +269,6 @@ function setFeedbackToastForScreen(screenId) {
 }
 
 
-
-
 function showScreen(id) {
   document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
   const el = document.getElementById(id);
@@ -352,20 +284,14 @@ function showScreen(id) {
 }
 
 
-
-
 function isPhoneLayout() {
   return window.matchMedia && window.matchMedia("(max-width: 600px)").matches;
 }
 
 
-
-
 function getActiveSimScreen() {
   return document.querySelector("#ambulanceScreen.screen.active, #transportScreen.screen.active");
 }
-
-
 
 
 function closeMobileDrawers() {
@@ -376,14 +302,10 @@ function closeMobileDrawers() {
 }
 
 
-
-
 function toggleMobileDrawer(which) {
   if (!isPhoneLayout()) return;
   const s = getActiveSimScreen();
   if (!s) return;
-
-
 
 
   const cls =
@@ -394,13 +316,9 @@ function toggleMobileDrawer(which) {
       : "mobileDrawer--dripsOpen";
 
 
-
-
   const opening = !s.classList.contains(cls);
   s.classList.remove("mobileDrawer--monitorOpen", "mobileDrawer--txOpen", "mobileDrawer--dripsOpen");
   if (opening) s.classList.add(cls);
-
-
 
 
   // If opening treatments and no tab is active, open Assessment by default.
@@ -409,8 +327,6 @@ function toggleMobileDrawer(which) {
     if (!cur) showTab("assessment");
   }
 }
-
-
 
 
 // Capture user actions from sim buttons for chips + sounds.
@@ -423,13 +339,9 @@ document.addEventListener(
     if (!document.getElementById("app")?.contains(btn)) return;
 
 
-
-
     // Enable audio on first user gesture.
     ensureAudio();
     soundClick();
-
-
 
 
     // If the click is in the sim action area (or right-side drips/O₂ panel), snapshot vitals for "what changed" chips.
@@ -443,8 +355,6 @@ document.addEventListener(
   },
   { capture: true }
 );
-
-
 
 
 /** Syncs O2 overlays with `sim.interventions.oxygenMode` (ambulance + transport). */
@@ -485,8 +395,6 @@ function updateSimSceneOverlays() {
   });
 
 
-
-
   const ivButtons = document.querySelectorAll('button[data-action="iv"]');
   const lockIv = (sim.interventions.ivSuccessCount || 0) >= 2;
   ivButtons.forEach((btn) => {
@@ -495,13 +403,9 @@ function updateSimSceneOverlays() {
 }
 
 
-
-
 function getDripLineCount() {
   return (sim.interventions.fluidsLineUsed ? 1 : 0) + (sim.interventions.pressorLineUsed ? 1 : 0);
 }
-
-
 
 
 function ensureDripLine(kind) {
@@ -513,12 +417,8 @@ function ensureDripLine(kind) {
   }
 
 
-
-
   const alreadyUsed = kind === "fluids" ? sim.interventions.fluidsLineUsed : sim.interventions.pressorLineUsed;
   if (alreadyUsed) return true;
-
-
 
 
   const usedCount = getDripLineCount();
@@ -530,15 +430,11 @@ function ensureDripLine(kind) {
   }
 
 
-
-
   if (usedCount === 1 && ivCount < 2) {
     showFeedback("Need a second IV for another drip.");
     sim.badActions++;
     return false;
   }
-
-
 
 
   if (kind === "fluids") sim.interventions.fluidsLineUsed = true;
@@ -548,15 +444,11 @@ function ensureDripLine(kind) {
 }
 
 
-
-
 function logAction(text) {
   const now = Date.now();
   const start = sim.scenarioStartMs || now;
   sim.actionsLog.push({ tMs: Math.max(0, now - start), text });
 }
-
-
 
 
 function formatActionTime(tMs) {
@@ -567,13 +459,9 @@ function formatActionTime(tMs) {
 }
 
 
-
-
 function showFeedback(message) {
   const box = document.getElementById("feedbackBox");
   if (!box) return;
-
-
 
 
   // Ensure visible even if a style reset hid it.
@@ -581,12 +469,9 @@ function showFeedback(message) {
   box.style.visibility = "visible";
   box.style.zIndex = "99999";
 
-
   box.innerText = message;
   box.style.opacity = "1";
   setTimeout(() => (box.style.opacity = "0.6"), 1500);
-
-
 
 
   // Sound cues (subtle):
@@ -614,8 +499,6 @@ function showFeedback(message) {
 }
 
 
-
-
 function typeText(element, text, speed = 25) {
   let i = 0;
   element.innerHTML = "";
@@ -625,8 +508,6 @@ function typeText(element, text, speed = 25) {
     if (i >= text.length) clearInterval(interval);
   }, speed);
 }
-
-
 
 
 function rand(min, max) {
@@ -644,8 +525,6 @@ function clampPain(value) {
 }
 
 
-
-
 /** IV fluid rate baseline for BP scaling (mL/min). */
 const FLUID_RATE_REF_ML_MIN = 125;
 /** Slider + "Open" preset both cap here (max flow). */
@@ -658,15 +537,11 @@ const SCENARIO_MAX_FLUID_ML = 2000;
 const FLUID_STRAIN_VOLUME_BUFFER_ML = 520;
 
 
-
-
 const O2_NC_MIN_LPM = 1;
 const O2_NC_MAX_LPM = 6;
 const O2_NRB_MIN_LPM = 10;
 const O2_NRB_MAX_LPM = 15;
 const O2_SPO2_TARGET = 95;
-
-
 
 
 /**
@@ -680,8 +555,6 @@ function ncSpo2Ceiling(lpm) {
 }
 
 
-
-
 /**
  * NRB ceilings: 10–13 L/min improves meaningfully; 14–15 L/min can reach mid/high‑90s.
  */
@@ -693,22 +566,16 @@ function nrbSpo2Ceiling(lpm) {
 }
 
 
-
-
 /** SpO₂ drifts toward device ceiling; cannot jump from 70s to mid‑90s on NC alone. */
 function applyOxygenSpo2Tick() {
   const mode = sim.interventions.oxygenMode;
   const lpm = sim.interventions.oxygenLpm;
 
 
-
-
   if (mode === "room_air") {
     sim.vitals.spo2 -= 0.15;
     return;
   }
-
-
 
 
   const s = sim.vitals.spo2;
@@ -720,13 +587,9 @@ function applyOxygenSpo2Tick() {
   }
 
 
-
-
   const isNc = mode === "nc";
   const isNcLow = isNc && lpm <= 3;
   const nrbHigh = mode === "nrb" && lpm >= 14;
-
-
 
 
   let baseRate = isNc ? (isNcLow ? 0.052 : 0.082) : lpm <= 13 ? 0.13 : nrbHigh ? 0.2 : 0.15;
@@ -734,18 +597,12 @@ function applyOxygenSpo2Tick() {
   if (gap < 2) delta *= 0.38;
 
 
-
-
   const maxStep = isNc ? (isNcLow ? 0.16 : 0.26) : lpm >= 15 ? 0.65 : lpm >= 14 ? 0.55 : 0.45;
   delta = Math.min(delta, maxStep);
 
 
-
-
   sim.vitals.spo2 += delta;
 }
-
-
 
 
 function getCaseLabel() {
@@ -756,14 +613,10 @@ function getCaseLabel() {
 }
 
 
-
-
 /** True for inferior / anterior / lateral STEMI patterns (not NSTEMI). */
 function isStemiCase() {
   return sim.caseType === "inferior" || sim.caseType === "anterior" || sim.caseType === "lateral";
 }
-
-
 
 
 function getPatientNotesHTML() {
@@ -773,8 +626,6 @@ function getPatientNotesHTML() {
     sim.patient.rvInvolvement ? "Possible RV involvement" : null,
     sim.patient.nausea && !sim.interventions.zofranGiven ? "Nausea" : null,
   ].filter(Boolean);
-
-
 
 
   return `
@@ -796,8 +647,6 @@ function getPatientNotesHTML() {
 }
 
 
-
-
 function clearBpCycleEngine() {
   if (sim.bpCycleInterval) {
     clearInterval(sim.bpCycleInterval);
@@ -811,19 +660,13 @@ function clearBpCycleEngine() {
 }
 
 
-
-
 function resetSim() {
   if (sim.vitalsInterval) clearInterval(sim.vitalsInterval);
   if (sim.transportInterval) clearInterval(sim.transportInterval);
   clearBpCycleEngine();
 
 
-
-
   actionOnce.clear();
-
-
 
 
   sim.phase = "start";
@@ -837,22 +680,14 @@ function resetSim() {
   sim.transportSecondsRemaining = 0;
 
 
-
-
   sim._lungFluidStrain = 0;
-
-
 
 
   sim.lastScenarioScore = null;
 
 
-
-
   sim.badActions = 0;
   sim.recklessActions = 0;
-
-
 
 
   sim.patient = {
@@ -861,12 +696,8 @@ function resetSim() {
     shortnessOfBreath: false,
 
 
-
-
     history: [],
     allergy: "No allergies",
-
-
 
 
     chf: false,
@@ -874,25 +705,17 @@ function resetSim() {
     rvInvolvement: false,
 
 
-
-
     nausea: false,
     lungSounds: "clear",
     mentalStatus: "alert",
-
-
 
 
     rhythmMode: "sinus",
     rhythmLabel: "Sinus rhythm",
 
 
-
-
     currentDialogue: "",
     pain: 0,
-
-
 
 
     stemiSeverity: null,
@@ -903,13 +726,9 @@ function resetSim() {
   };
 
 
-
-
   sim.vitals = { hr: 0, spo2: 0, sbp: 0, dbp: 0, rr: 0 };
   sim.baselineVitals = {};
   sim.displayedBp = { sbp: null, dbp: null };
-
-
 
 
   sim.hypotensionSeconds = 0;
@@ -917,18 +736,12 @@ function resetSim() {
   sim.alertContactSeconds = 0;
 
 
-
-
   sim.bpCycleOn = false;
-
-
 
 
   sim.interventions = {
     oxygenMode: "room_air",
     oxygenLpm: 0,
-
-
 
 
     ivEstablished: false,
@@ -938,14 +751,10 @@ function resetSim() {
     pressorLineUsed: false,
 
 
-
-
     fluidRunning: false,
     fluidTarget: 0,
     fluidGiven: 0,
     fluidRateMlPerMin: 0,
-
-
 
 
     aspirinGiven: false,
@@ -955,37 +764,25 @@ function resetSim() {
     atropineCount: 0,
 
 
-
-
     pressorActive: false,
     pressorMed: "norepi",
     pressorRate: 0,
-
-
 
 
     pushEpiCount: 0,
   };
 
 
-
-
   sim.alarms = { active: false, reasons: [], lastBeepAt: 0 };
   sim.actionsLog = [];
-
-
 
 
   updateBpCycleLabel();
   setAlarmBanner([]);
 
 
-
-
   const caseStore = document.getElementById("scenarioCaseType");
   if (caseStore) caseStore.value = "";
-
-
 
 
   const fb = document.getElementById("feedbackBox");
@@ -993,8 +790,6 @@ function resetSim() {
     fb.innerText = "";
     fb.style.opacity = "0.6";
   }
-
-
 
 
   if (typeof rhythmEngine !== "undefined") {
@@ -1010,12 +805,8 @@ function resetSim() {
   }
 
 
-
-
   updateSimSceneOverlays();
 }
-
-
 
 
 function markUnnecessary(key, message, severity = "bad") {
@@ -1024,14 +815,10 @@ function markUnnecessary(key, message, severity = "bad") {
   else sim.badActions++;
 
 
-
-
   logActionOnce(`unnec-${key}`, message);
   // Avoid duplicates in debrief.
   if (!sim.unnecessaryLog.includes(message)) sim.unnecessaryLog.push(message);
 }
-
-
 
 
 function generatePatient() {
@@ -1039,20 +826,14 @@ function generatePatient() {
   const age = sim.patient.age;
 
 
-
-
   sim.patient.shortnessOfBreath = Math.random() < 0.35;
   sim.patient.complaint = "Chest pain";
   sim.patient.pain = clampPain(rand(4, 9));
 
 
-
-
   // nausea: less random baseline
   sim.patient.nausea = Math.random() < 0.15;
   sim.patient.chf = Math.random() < 0.18;
-
-
 
 
   // PDE5: rare + age dependent
@@ -1061,8 +842,6 @@ function generatePatient() {
   else if (age <= 70) pde5Chance = 0.01;
   else pde5Chance = 0.002;
   sim.patient.pde5 = Math.random() < pde5Chance;
-
-
 
 
   // Aspirin allergy rare (weighted)
@@ -1074,16 +853,12 @@ function generatePatient() {
   else sim.patient.allergy = "Aspirin";
 
 
-
-
   if (sim.runMode === "ce" && sim.ceForcedCaseType) {
     sim.caseType = sim.ceForcedCaseType;
   } else {
     sim.caseType = pick(["inferior", "anterior", "lateral", "nstemi"]);
   }
   sim.patient.rvInvolvement = sim.caseType === "inferior" && Math.random() < 0.35;
-
-
 
 
   sim.patient.stemiSeverity = null;
@@ -1098,8 +873,6 @@ function generatePatient() {
   }
 
 
-
-
   // rhythm mode
   const rhythmRoll = Math.random();
   if (rhythmRoll < 0.12) sim.patient.rhythmMode = "afib";
@@ -1109,20 +882,14 @@ function generatePatient() {
   else sim.patient.rhythmMode = "sinus";
 
 
-
-
   let spo2 = rand(89, 98);
   let hr = rand(58, 102);
   let sbp = rand(96, 148);
   let rr = rand(14, 24);
 
 
-
-
   if (sim.caseType === "inferior") sbp = rand(92, 120);
   if (sim.patient.rvInvolvement) sbp = rand(86, 112);
-
-
 
 
   if (sim.patient.stemiSeverity === "moderate") {
@@ -1150,20 +917,14 @@ function generatePatient() {
   }
 
 
-
-
   if (sim.patient.shortnessOfBreath) {
     spo2 = Math.max(84, spo2 - rand(2, 6));
     rr = Math.min(30, rr + rand(2, 5));
   }
 
 
-
-
   if (sim.patient.rhythmMode === "afib") hr = rand(80, 140);
   if (Math.random() < 0.2) hr = rand(48, 58);
-
-
 
 
   sim.patient.symptomaticBrady = false;
@@ -1174,32 +935,22 @@ function generatePatient() {
   }
 
 
-
-
   sbp = clamp(sbp, 66, 175);
   hr = clamp(hr, 38, 165);
-
-
 
 
   sim.vitals = { hr, spo2, sbp, dbp: Math.round(sbp * 0.58), rr };
   sim.baselineVitals = { ...sim.vitals };
 
 
-
-
   sim.patient.lungSounds = "clear";
   updateRhythmLabel();
-
-
 
 
   const hx = ["Hypertension","Diabetes","CAD","Previous MI","High cholesterol","Smoker","No significant history"];
   sim.patient.history = [pick(hx)];
   if (sim.patient.chf) sim.patient.history.push("CHF");
 }
-
-
 
 
 function choosePracticeMode() {
@@ -1209,8 +960,6 @@ function choosePracticeMode() {
 }
 
 
-
-
 function chooseCEMode() {
   sim.runMode = "ce";
   sim.ceForcedCaseType = null;
@@ -1218,20 +967,15 @@ function chooseCEMode() {
 }
 
 
-
-
 function ceAckContinue() {
   showScreen("ceEcgScreen");
 }
-
-
 
 
 function beginCEWithCase(caseKey) {
   sim.ceForcedCaseType = caseKey;
   showCEObjectives();
 }
-
 
 const CE_OBJECTIVES = {
   inferior: {
@@ -1260,33 +1004,26 @@ const CE_OBJECTIVES = {
   },
 };
 
-
 function showCEObjectives() {
   const key = sim.ceForcedCaseType || "nstemi";
   const o = CE_OBJECTIVES[key] || CE_OBJECTIVES.nstemi;
-
 
   const titleEl = document.getElementById("ceObjectivesTitle");
   const simEl = document.getElementById("ceObjSim");
   const lessonEl = document.getElementById("ceObjLesson");
   const quizEl = document.getElementById("ceObjQuiz");
 
-
   if (titleEl) titleEl.textContent = o.title;
   if (simEl) simEl.innerHTML = o.sim.map((t) => `<li>${t}</li>`).join("");
   if (lessonEl) lessonEl.innerHTML = o.lesson.map((t) => `<li>${t}</li>`).join("");
   if (quizEl) quizEl.innerHTML = o.quiz.map((t) => `<li>${t}</li>`).join("");
 
-
   showScreen("ceObjectivesScreen");
 }
-
 
 function ceObjectivesBegin() {
   startScenario();
 }
-
-
 
 
 function goToLauncher() {
@@ -1297,13 +1034,9 @@ function goToLauncher() {
 }
 
 
-
-
 function restartFromEndScreen() {
   startScenario();
 }
-
-
 
 
 function startScenario() {
@@ -1313,21 +1046,15 @@ function startScenario() {
   sim.scenarioStartMs = Date.now();
 
 
-
-
   const dispatch = document.getElementById("dispatchText");
   const text = `Dispatch: ${sim.patient.age}-year-old with chest pain${
     sim.patient.shortnessOfBreath ? " and shortness of breath" : ""
   }`;
 
 
-
-
   typeText(dispatch, text);
   showScreen("dispatchScreen");
 }
-
-
 
 
 function goEnRoute() {
@@ -1336,13 +1063,9 @@ function goEnRoute() {
 }
 
 
-
-
 function arriveOnScene() {
   sim.phase = "scene";
   document.getElementById("sceneText").innerText = `${sim.patient.age} y/o patient appears uncomfortable.`;
-
-
 
 
   document.getElementById("scenePrompt").innerText =
@@ -1351,12 +1074,8 @@ function arriveOnScene() {
       : 'Patient: "My chest hurts."';
 
 
-
-
   showScreen("sceneScreen");
 }
-
-
 
 
 /* Primary survey */
@@ -1367,8 +1086,6 @@ const primaryQuestionBank = {
 let currentPrimaryCorrect = null;
 
 
-
-
 function goToPrimary() {
   sim.phase = "primary";
   renderPrimaryChoices();
@@ -1376,20 +1093,14 @@ function goToPrimary() {
 }
 
 
-
-
 function renderPrimaryChoices() {
   const container = document.getElementById("primaryChoices");
   if (!container) return;
 
 
-
-
   container.innerHTML = "";
   const correct = pick(primaryQuestionBank.correct);
   currentPrimaryCorrect = correct;
-
-
 
 
   let wrongChoices = [];
@@ -1399,11 +1110,7 @@ function renderPrimaryChoices() {
   }
 
 
-
-
   const choices = [correct, ...wrongChoices].sort(() => Math.random() - 0.5);
-
-
 
 
   choices.forEach((choice) => {
@@ -1414,8 +1121,6 @@ function renderPrimaryChoices() {
     container.appendChild(btn);
   });
 }
-
-
 
 
 function handlePrimaryAnswer(answer) {
@@ -1431,8 +1136,6 @@ function handlePrimaryAnswer(answer) {
 }
 
 
-
-
 /* ECG */
 function goToECG() {
   sim.phase = "ecg";
@@ -1441,13 +1144,9 @@ function goToECG() {
 }
 
 
-
-
 function updateECGDisplay() {
   const el = document.getElementById("ecgFindings");
   if (!el) return;
-
-
 
 
   if (sim.caseType === "inferior") el.innerText = "ST elevation in leads II, III, aVF";
@@ -1455,8 +1154,6 @@ function updateECGDisplay() {
   else if (sim.caseType === "lateral") el.innerText = "ST elevation in leads I, aVL, V5, V6";
   else el.innerText = "No ST elevation present";
 }
-
-
 
 
 function handleECGAnswer(answer) {
@@ -1472,8 +1169,6 @@ function handleECGAnswer(answer) {
 }
 
 
-
-
 /* Focused assessment */
 function showFocusedAssessment() {
   sim.phase = "focused";
@@ -1483,19 +1178,13 @@ function showFocusedAssessment() {
 }
 
 
-
-
 function fillFocusedAssessment() {
   const faPatient = document.getElementById("faPatient");
   const faGeneral = document.getElementById("faGeneral");
   const faHistory = document.getElementById("faHistory");
 
 
-
-
   if (faPatient) faPatient.innerHTML = `<strong>Patient:</strong> ${sim.patient.age} y/o`;
-
-
 
 
   if (faGeneral) {
@@ -1506,14 +1195,10 @@ function fillFocusedAssessment() {
   }
 
 
-
-
   if (faHistory) {
     faHistory.innerHTML = getPatientNotesHTML();
   }
 }
-
-
 
 
 function updateFocusedVitals() {
@@ -1521,12 +1206,8 @@ function updateFocusedVitals() {
   if (!el) return;
 
 
-
-
   const bpText =
     sim.displayedBp.sbp === null ? "-- / --" : `${Math.round(sim.displayedBp.sbp)}/${Math.round(sim.displayedBp.dbp)}`;
-
-
 
 
   const f = getMonitorAlarmFlags();
@@ -1537,8 +1218,6 @@ function updateFocusedVitals() {
   let spo2Class = "hudSpo2Line";
   if (f.lowSpo2) spo2Class += " hudVital--alarm";
   else if (spo2WarnRoomAir) spo2Class += " hudVital--warn";
-
-
 
 
   el.innerHTML = `
@@ -1552,18 +1231,12 @@ function updateFocusedVitals() {
 }
 
 
-
-
 function continueFromAssessment() {
   sim.phase = "ambulance";
   logAction("Moved patient to ambulance");
 
 
-
-
   showScreen("ambulanceScreen");
-
-
 
 
   setFluidRatePreset("slow");
@@ -1572,13 +1245,9 @@ function continueFromAssessment() {
   showTab("__none__");
 
 
-
-
   startVitalsEngine();
   startRhythmRenderer();
 }
-
-
 
 
 function showTab(tabName) {
@@ -1586,12 +1255,8 @@ function showTab(tabName) {
   if (!activeScreen) return;
 
 
-
-
   const current = activeScreen.getAttribute("data-active-tab") || "";
   const isTogglingOff = current === tabName;
-
-
 
 
   activeScreen.querySelectorAll(".tabContent").forEach((t) => {
@@ -1600,14 +1265,10 @@ function showTab(tabName) {
   });
 
 
-
-
   if (isTogglingOff) {
     activeScreen.setAttribute("data-active-tab", "");
     return;
   }
-
-
 
 
   const tab = activeScreen.querySelector(`.tabContent[data-tab="${tabName}"]`);
@@ -1621,15 +1282,11 @@ function showTab(tabName) {
 }
 
 
-
-
 function assessLungs() {
   const msg = sim.patient.lungSounds === "rales" ? "Lung sounds: Rales bilaterally." : "Lung sounds: Clear bilaterally.";
   logAction("Lung sounds assessed");
   showFeedback(msg);
 }
-
-
 
 
 function checkMentalStatus() {
@@ -1641,20 +1298,14 @@ function checkMentalStatus() {
 }
 
 
-
-
 function updateRhythmLabel() {
   const hr = sim.vitals.hr;
-
-
 
 
   if (sim.patient.rhythmMode === "afib") {
     sim.patient.rhythmLabel = "A-fib";
     return;
   }
-
-
 
 
   if (sim.patient.rhythmMode === "pvc") {
@@ -1665,8 +1316,6 @@ function updateRhythmLabel() {
   }
 
 
-
-
   if (sim.patient.rhythmMode === "sinus_pac") {
     if (hr < 60) sim.patient.rhythmLabel = "Sinus brady w/ occasional PACs";
     else if (hr > 100) sim.patient.rhythmLabel = "Sinus tach w/ occasional PACs";
@@ -1675,14 +1324,10 @@ function updateRhythmLabel() {
   }
 
 
-
-
   if (sim.patient.rhythmMode === "sinus_arrhythmia") {
     sim.patient.rhythmLabel = "Sinus arrhythmia";
     return;
   }
-
-
 
 
   if (hr < 60) sim.patient.rhythmLabel = "Sinus bradycardia";
@@ -1691,12 +1336,8 @@ function updateRhythmLabel() {
 }
 
 
-
-
 function startVitalsEngine() {
   if (sim.vitalsInterval) clearInterval(sim.vitalsInterval);
-
-
 
 
   sim.vitalsInterval = setInterval(() => {
@@ -1719,11 +1360,7 @@ function startVitalsEngine() {
     }
 
 
-
-
     applyOxygenSpo2Tick();
-
-
 
 
     if (sim.interventions.fluidRunning && sim.interventions.fluidRateMlPerMin > 0) {
@@ -1731,14 +1368,10 @@ function startVitalsEngine() {
       sim.interventions.fluidGiven += ratePerSec;
 
 
-
-
       if (sim.interventions.fluidGiven >= sim.interventions.fluidTarget) {
         sim.interventions.fluidGiven = sim.interventions.fluidTarget;
         sim.interventions.fluidRunning = false;
       }
-
-
 
 
       const fr = sim.interventions.fluidRateMlPerMin;
@@ -1757,16 +1390,12 @@ function startVitalsEngine() {
     }
 
 
-
-
     let drift = sim.patient.hemodynamicDrift || 0;
     if (drift > 0) {
       if (sim.interventions.pressorActive && sim.interventions.pressorRate >= 5) drift *= 0.38;
       if (sim.interventions.fluidRunning && sim.interventions.fluidRateMlPerMin >= FLUID_RATE_REF_ML_MIN) drift *= 0.52;
       sim.vitals.sbp -= drift;
     }
-
-
 
 
     const fr = sim.interventions.fluidRateMlPerMin;
@@ -1788,14 +1417,10 @@ function startVitalsEngine() {
     sim._lungFluidStrain = strain;
 
 
-
-
     const ralesThreshold = sim.patient.chf ? 44 : 52;
     if (strain >= ralesThreshold && given >= 380) sim.patient.lungSounds = "rales";
     else if (strain < 14 && !sim.patient.chf) sim.patient.lungSounds = "clear";
     else if (strain < 18 && sim.patient.chf && given < 400) sim.patient.lungSounds = "clear";
-
-
 
 
     const ox = sim.interventions.oxygenMode;
@@ -1812,14 +1437,10 @@ function startVitalsEngine() {
     }
 
 
-
-
     if (sim.interventions.nitroCount > 0) {
       sim.vitals.sbp -= 0.25;
       sim.vitals.dbp -= 0.12;
     }
-
-
 
 
     if (sim.interventions.pressorActive && sim.interventions.pressorRate > 0) {
@@ -1839,22 +1460,16 @@ function startVitalsEngine() {
     }
 
 
-
-
     if (sim.interventions.atropineCount > 0) {
       sim.vitals.hr += 0.35 * Math.min(sim.interventions.atropineCount, 3);
     }
     if (sim.patient.rhythmMode === "afib") sim.vitals.hr += rand(-2, 2) * 0.6;
 
 
-
-
     sim.vitals.hr += rand(-1, 1) * 0.25;
     sim.vitals.spo2 += rand(-1, 1) * 0.15;
     sim.vitals.sbp += rand(-1, 1) * 0.35;
     sim.vitals.dbp += rand(-1, 1) * 0.20;
-
-
 
 
     sim.vitals.hr = clamp(sim.vitals.hr, 30, 180);
@@ -1865,20 +1480,14 @@ function startVitalsEngine() {
     sim.patient.pain = clampPain(sim.patient.pain);
 
 
-
-
     if (sim.vitals.sbp < 75) sim.hypotensionSeconds += 1;
     else sim.hypotensionSeconds = 0;
-
-
 
 
     // Timed deterioration (gentle): sustained hypoxia on room air worsens.
     const onRoomAir = sim.interventions.oxygenMode === "room_air";
     if (onRoomAir && sim.vitals.spo2 < 90) sim.hypoxiaSeconds += 1;
     else sim.hypoxiaSeconds = 0;
-
-
 
 
     if (sim.hypoxiaSeconds >= 12) {
@@ -1891,14 +1500,10 @@ function startVitalsEngine() {
     }
 
 
-
-
     // Pain can creep up by 1 if untreated severe pain (no narcotics).
     if (sim.patient.pain >= 7 && sim.interventions.narcoticDoses === 0 && Math.random() < 0.10) {
       sim.patient.pain = clampPain(sim.patient.pain + 1);
     }
-
-
 
 
     if (sim.vitals.sbp < 85 && sim.patient.mentalStatus === "alert") sim.patient.mentalStatus = "altered";
@@ -1911,25 +1516,17 @@ function startVitalsEngine() {
     }
 
 
-
-
     if (sim.vitals.sbp > 95 && sim.patient.mentalStatus === "unresponsive") sim.patient.mentalStatus = "altered";
     if (sim.vitals.sbp > 105 && sim.patient.mentalStatus === "altered") sim.patient.mentalStatus = "alert";
 
 
-
-
     if (sim.patient.mentalStatus === "alert") sim.alertContactSeconds += 1;
-
-
 
 
     updateRhythmLabel();
     updateAllDisplays();
   }, 1000);
 }
-
-
 
 
 function updateAllDisplays() {
@@ -1947,20 +1544,14 @@ function updateAllDisplays() {
 }
 
 
-
-
 function maybeShowEffectChips() {
   if (!sim.preActionSnapshot || !sim.lastUserActionMs) return;
   if (Date.now() - sim.lastUserActionMs > 1200) return;
 
 
-
-
   const before = sim.preActionSnapshot;
   const after = snapshotVitals();
   sim.preActionSnapshot = null; // show once
-
-
 
 
   const chips = [];
@@ -1970,26 +1561,18 @@ function maybeShowEffectChips() {
   const dHr = after.hr - before.hr;
 
 
-
-
   if (Math.abs(dSpo2) >= 0.8) chips.push({ t: `SpO₂ ${dSpo2 > 0 ? "↑" : "↓"}`, tone: dSpo2 > 0 ? "good" : "warn" });
   if (Math.abs(dPain) >= 1) chips.push({ t: `Pain ${dPain < 0 ? "↓" : "↑"}`, tone: dPain < 0 ? "good" : "warn" });
   if (Math.abs(dSbp) >= 1.8) chips.push({ t: `BP ${dSbp > 0 ? "↑" : "↓"}`, tone: dSbp > 0 ? "good" : "warn" });
   if (Math.abs(dHr) >= 1.8) chips.push({ t: `HR ${dHr > 0 ? "↑" : "↓"}`, tone: "warn" });
 
 
-
-
   // If nothing measurable changed, still give a small "logged" chip (keeps it feeling responsive).
   if (!chips.length) chips.push({ t: "Action logged", tone: "good" });
 
 
-
-
   chips.slice(0, 2).forEach((c) => pushEffectChip(c.t, c.tone));
 }
-
-
 
 
 /** Grey out med buttons when max doses used (ambulance + transport share same counts). */
@@ -1997,8 +1580,6 @@ function updateMedButtonStates() {
   const nitroMax = sim.interventions.nitroCount >= 3;
   const narMax = sim.interventions.narcoticDoses >= 4;
   const atrMax = sim.interventions.atropineCount >= 3;
-
-
 
 
   document.querySelectorAll("#app button[data-action]").forEach((btn) => {
@@ -2012,8 +1593,6 @@ function updateMedButtonStates() {
     }
 
 
-
-
     let depleted = false;
     if (a === "aspirin") depleted = sim.interventions.aspirinGiven;
     else if (a === "nitro") depleted = nitroMax;
@@ -2023,14 +1602,10 @@ function updateMedButtonStates() {
     else if (a === "pushEpi") depleted = sim.interventions.pushEpiCount >= 2;
 
 
-
-
     btn.classList.toggle("medDepleted", depleted);
     btn.disabled = depleted;
   });
 }
-
-
 
 
 /** Same thresholds as `computeAlarmReasons` — used for monitor red highlighting. */
@@ -2048,8 +1623,6 @@ function getMonitorAlarmFlags() {
 }
 
 
-
-
 function updateAmbulanceMonitor() {
   const nodes = [
     document.getElementById("ambulanceVitalsScene"),
@@ -2057,17 +1630,11 @@ function updateAmbulanceMonitor() {
   ].filter(Boolean);
 
 
-
-
   if (nodes.length === 0) return;
-
-
 
 
   const bpText =
     sim.displayedBp.sbp === null ? "-- / --" : `${Math.round(sim.displayedBp.sbp)}/${Math.round(sim.displayedBp.dbp)}`;
-
-
 
 
   const f = getMonitorAlarmFlags();
@@ -2080,8 +1647,6 @@ function updateAmbulanceMonitor() {
   else if (spo2WarnRoomAir) spo2Class += " hudVital--warn";
 
 
-
-
   const html = `
     BP: <span class="hudVitalLine${bpClass}">${bpText}</span><br>
     HR: <span class="hudVitalLine${hrClass}">${Math.round(sim.vitals.hr)}</span><br>
@@ -2092,19 +1657,13 @@ function updateAmbulanceMonitor() {
   `;
 
 
-
-
   nodes.forEach((el) => (el.innerHTML = html));
 }
-
-
 
 
 /** Auto BP cycle interval — keep label + feedback in sync with `BP_CYCLE_MS`. */
 const BP_CYCLE_MS = 20000;
 const BP_CYCLE_SEC = BP_CYCLE_MS / 1000;
-
-
 
 
 /** If a new cuff read rounds to the same as last display, nudge ±1 mmHg on SBP or DBP (display only). */
@@ -2132,8 +1691,6 @@ function displayedBpWithMeasurementJitter() {
 }
 
 
-
-
 function manualBP(fromAutoCycle) {
   const now = Date.now();
   if (!fromAutoCycle && now - lastBPTime < 1500) {
@@ -2143,21 +1700,15 @@ function manualBP(fromAutoCycle) {
   lastBPTime = now;
 
 
-
-
   const next = displayedBpWithMeasurementJitter();
   sim.displayedBp.sbp = next.sbp;
   sim.displayedBp.dbp = next.dbp;
-
-
 
 
   updateAllDisplays();
   logActionOnce("bp", "Blood pressure obtained");
   showFeedback(`BP: ${Math.round(sim.displayedBp.sbp)}/${Math.round(sim.displayedBp.dbp)}`);
 }
-
-
 
 
 function cycleBP() {
@@ -2171,14 +1722,10 @@ function cycleBP() {
   }
 
 
-
-
   sim.bpCycleOn = true;
   showFeedback(`BP Cycle: ON (every ${BP_CYCLE_SEC}s)`);
   logActionOnce("bpCycleOn", `BP cycling started (${BP_CYCLE_SEC}s)`);
   updateBpCycleLabel();
-
-
 
 
   manualBP(true);
@@ -2190,13 +1737,9 @@ function cycleBP() {
   }, BP_CYCLE_MS);
 
 
-
-
   sim.bpCycleUiInterval = setInterval(updateBpCycleLabel, 500);
   updateBpCycleLabel();
 }
-
-
 
 
 function updateBpCycleLabel() {
@@ -2220,13 +1763,9 @@ function updateBpCycleLabel() {
 }
 
 
-
-
 /* Patient always has chest pain */
 function updatePatientDialogue() {
   let message = "";
-
-
 
 
   const pickOne = (key, arr) => {
@@ -2234,12 +1773,8 @@ function updatePatientDialogue() {
     sim._dlg = sim._dlg || { key: "", msg: "", until: 0, overrides: [] };
 
 
-
-
     // If we are still within the hold window for this same state, keep the same line.
     if (sim._dlg.key === key && sim._dlg.msg && now < (sim._dlg.until || 0)) return sim._dlg.msg;
-
-
 
 
     const msg = arr[rand(0, arr.length - 1)];
@@ -2249,8 +1784,6 @@ function updatePatientDialogue() {
     sim._dlg.until = now + 6500;
     return msg;
   };
-
-
 
 
   const consumeOverride = () => {
@@ -2263,14 +1796,10 @@ function updatePatientDialogue() {
   };
 
 
-
-
   const overrideMsg = consumeOverride();
   if (overrideMsg) {
     message = overrideMsg;
   } else {
-
-
 
 
     if (sim.patient.mentalStatus === "unresponsive") {
@@ -2335,8 +1864,6 @@ function updatePatientDialogue() {
   }
 
 
-
-
   if (message !== sim.patient.currentDialogue) {
     sim.patient.currentDialogue = message;
     const nodes = [
@@ -2347,21 +1874,15 @@ function updatePatientDialogue() {
     ].filter(Boolean);
 
 
-
-
     nodes.forEach((el) => (el.innerText = `Patient: "${message}"`));
   }
 }
-
-
 
 
 function airwayCheck() {
   logActionOnce("airway", "Airway assessed");
   showFeedback("Airway patent and clear.");
 }
-
-
 
 
 function giveNC() {
@@ -2374,8 +1895,6 @@ function giveNC() {
     updateAllDisplays();
     return;
   }
-
-
 
 
   const wasNrb = sim.interventions.oxygenMode === "nrb";
@@ -2396,8 +1915,6 @@ function giveNC() {
 }
 
 
-
-
 function giveNRB() {
   if (sim.interventions.oxygenMode === "nrb") {
     sim.interventions.oxygenMode = "room_air";
@@ -2408,8 +1925,6 @@ function giveNRB() {
     updateAllDisplays();
     return;
   }
-
-
 
 
   if (sim.vitals.spo2 > 90) {
@@ -2429,12 +1944,8 @@ function giveNRB() {
 }
 
 
-
-
 function attemptIV() {
   sim.interventions.ivAttempts++;
-
-
 
 
   if ((sim.interventions.ivSuccessCount || 0) >= 2) {
@@ -2444,13 +1955,9 @@ function attemptIV() {
   }
 
 
-
-
   if (Math.random() < 0.75) {
     sim.interventions.ivEstablished = true;
     sim.interventions.ivSuccessCount = (sim.interventions.ivSuccessCount || 0) + 1;
-
-
 
 
     if (sim.interventions.ivSuccessCount === 1) {
@@ -2468,8 +1975,6 @@ function attemptIV() {
 }
 
 
-
-
 function requireIvAccess() {
   if (!sim.interventions.ivEstablished) {
     showFeedback("You need IV access first.");
@@ -2477,8 +1982,6 @@ function requireIvAccess() {
   }
   return true;
 }
-
-
 
 
 /* Fluids */
@@ -2509,16 +2012,12 @@ function setFluidRatePreset(preset) {
   if (preset === "open") sim.interventions.fluidRateMlPerMin = FLUID_SLIDER_MAX_ML_MIN;
 
 
-
-
   logActionOnce(`fluidsRate-${preset}`, `Fluids rate set: ${preset.toUpperCase()}`);
   showFeedback(`Fluids rate: ${preset.toUpperCase()}`);
   updateFluidDisplays();
 }
 function addFluidTarget(amount) {
   if (!ensureDripLine("fluids")) return;
-
-
 
 
   const next = sim.interventions.fluidTarget + amount;
@@ -2528,12 +2027,8 @@ function addFluidTarget(amount) {
   }
 
 
-
-
   sim.interventions.fluidTarget = next;
   sim.interventions.fluidRunning = true;
-
-
 
 
   logAction(`Fluids added: +${amount} mL`);
@@ -2553,14 +2048,10 @@ function updateFluidDisplays() {
   ].filter(Boolean);
 
 
-
-
   const rateNodes = [
     document.getElementById("fluidRateAmbulance"),
     document.getElementById("fluidRateTransport"),
   ].filter(Boolean);
-
-
 
 
   const ui1 = getFluidUI(false);
@@ -2569,12 +2060,8 @@ function updateFluidDisplays() {
   if (ui2.slider) ui2.slider.value = String(Math.round(sim.interventions.fluidRateMlPerMin));
 
 
-
-
   const text = `Fluids: ${Math.round(sim.interventions.fluidGiven)} mL / ${Math.round(sim.interventions.fluidTarget)} mL`;
   statusNodes.forEach((el) => (el.innerText = text));
-
-
 
 
   const rateText =
@@ -2585,15 +2072,11 @@ function updateFluidDisplays() {
 }
 
 
-
-
 function getOxygenUI(isTransport = false) {
   return {
     slider: document.getElementById(isTransport ? "oxygenLpmSlider2" : "oxygenLpmSlider"),
   };
 }
-
-
 
 
 function clampOxygenLpmForMode(lpm, mode) {
@@ -2602,8 +2085,6 @@ function clampOxygenLpmForMode(lpm, mode) {
   if (mode === "nrb") return clamp(Math.round(n), O2_NRB_MIN_LPM, O2_NRB_MAX_LPM);
   return 0;
 }
-
-
 
 
 function setOxygenRateFromUI(isTransport = false) {
@@ -2616,8 +2097,6 @@ function setOxygenRateFromUI(isTransport = false) {
   if (ui2.slider) ui2.slider.value = String(sim.interventions.oxygenLpm);
   updateOxygenDisplays();
 }
-
-
 
 
 function nudgeOxygenLpm(delta, isTransport = false) {
@@ -2633,13 +2112,9 @@ function nudgeOxygenLpm(delta, isTransport = false) {
 }
 
 
-
-
 function updateOxygenDisplays() {
   const mode = sim.interventions.oxygenMode;
   const lpm = sim.interventions.oxygenLpm;
-
-
 
 
   const statusAmb = document.getElementById("oxygenStatusAmbulance");
@@ -2652,12 +2127,8 @@ function updateOxygenDisplays() {
   const rowTr = document.getElementById("oxygenDialRowTransport");
 
 
-
-
   const ui1 = getOxygenUI(false);
   const ui2 = getOxygenUI(true);
-
-
 
 
   const syncSlider = (slider) => {
@@ -2683,12 +2154,8 @@ function updateOxygenDisplays() {
   };
 
 
-
-
   syncSlider(ui1.slider);
   syncSlider(ui2.slider);
-
-
 
 
   const statusText =
@@ -2699,13 +2166,9 @@ function updateOxygenDisplays() {
       : "Room air";
 
 
-
-
   [statusAmb, statusTr].forEach((el) => {
     if (el) el.innerText = statusText;
   });
-
-
 
 
   let hint = "Choose NC or NRB in Breathing, then set flow.";
@@ -2716,13 +2179,9 @@ function updateOxygenDisplays() {
   }
 
 
-
-
   [hintAmb, hintTr].forEach((el) => {
     if (el) el.innerText = hint;
   });
-
-
 
 
   const lpmShow =
@@ -2734,14 +2193,10 @@ function updateOxygenDisplays() {
   });
 
 
-
-
   [rowAmb, rowTr].forEach((el) => {
     if (el) el.classList.toggle("oxygenDialRow--disabled", mode === "room_air");
   });
 }
-
-
 
 
 /* Meds */
@@ -2750,8 +2205,6 @@ function giveAspirin() {
     showFeedback("Aspirin already given.");
     return;
   }
-
-
 
 
   if (sim.patient.allergy === "Aspirin") {
@@ -2764,27 +2217,19 @@ function giveAspirin() {
   }
 
 
-
-
   sim.interventions.aspirinGiven = true;
   updateAllDisplays();
 }
-
-
 
 
 function giveZofran() {
   if (!requireIvAccess()) return;
 
 
-
-
   if (sim.interventions.zofranGiven) {
     showFeedback("Zofran already given.");
     return;
   }
-
-
 
 
   sim.interventions.zofranGiven = true;
@@ -2801,8 +2246,6 @@ function giveZofran() {
 }
 
 
-
-
 function giveNitro() {
   if (lastActionTime["nitro"] && Date.now() - lastActionTime["nitro"] < 3000) {
     showFeedback("Slow down.");
@@ -2811,14 +2254,10 @@ function giveNitro() {
   lastActionTime["nitro"] = Date.now();
 
 
-
-
   if (sim.interventions.nitroCount >= 3) {
     showFeedback("Max nitro reached.");
     return;
   }
-
-
 
 
   const sbp = sim.vitals.sbp;
@@ -2826,15 +2265,11 @@ function giveNitro() {
   const rv = sim.patient.rvInvolvement;
 
 
-
-
   if (sim.caseType === "inferior" && sbp < 110 && sbp >= 100 && !rv) {
     sim.recklessActions++;
     logActionOnce("nitroInferiorBorderlineBP", "Nitro in inferior STEMI with borderline BP");
     showFeedback("Caution: inferior STEMI — nitro risky with borderline BP / RV concerns.");
   }
-
-
 
 
   if (pde5) {
@@ -2846,8 +2281,6 @@ function giveNitro() {
   }
 
 
-
-
   if (sbp < 100) {
     sim.recklessActions++;
     logActionOnce("nitroLowBP", "Nitro given despite SBP < 100");
@@ -2855,8 +2288,6 @@ function giveNitro() {
     sim.vitals.sbp -= 18;
     sim.vitals.dbp -= 10;
   }
-
-
 
 
   if (rv) {
@@ -2868,13 +2299,9 @@ function giveNitro() {
   }
 
 
-
-
   sim.interventions.nitroCount++;
   sim.patient.pain = clampPain(sim.patient.pain - 1);
   logAction(`Nitro given x${sim.interventions.nitroCount}`);
-
-
 
 
   if (sim.vitals.sbp < 75) {
@@ -2886,26 +2313,18 @@ function giveNitro() {
   }
 
 
-
-
   updateAllDisplays();
 }
-
-
 
 
 function giveMorphine() {
   if (!requireIvAccess()) return;
 
 
-
-
   if (sim.interventions.narcoticDoses >= 4) {
     showFeedback("Maximum opioid doses for this scenario.");
     return;
   }
-
-
 
 
   if (sim.patient.allergy === "Morphine") {
@@ -2919,12 +2338,8 @@ function giveMorphine() {
   }
 
 
-
-
   sim.interventions.narcoticDoses++;
   logAction(`Morphine — narcotic dose ${sim.interventions.narcoticDoses}/4`);
-
-
 
 
   if (!sim.patient.nausea && Math.random() < 0.25) {
@@ -2935,12 +2350,8 @@ function giveMorphine() {
 }
 
 
-
-
 function giveFentanyl() {
   if (!requireIvAccess()) return;
-
-
 
 
   if (sim.interventions.narcoticDoses >= 4) {
@@ -2949,19 +2360,13 @@ function giveFentanyl() {
   }
 
 
-
-
   sim.patient.pain = clampPain(sim.patient.pain - 2);
   showFeedback("Fentanyl given.");
   logActionOnce("fent", "Fentanyl given");
 
 
-
-
   sim.interventions.narcoticDoses++;
   logAction(`Fentanyl — narcotic dose ${sim.interventions.narcoticDoses}/4`);
-
-
 
 
   if (!sim.patient.nausea && Math.random() < 0.25) {
@@ -2972,20 +2377,14 @@ function giveFentanyl() {
 }
 
 
-
-
 function giveAtropine() {
   if (!requireIvAccess()) return;
-
-
 
 
   if (sim.interventions.atropineCount >= 3) {
     showFeedback("Maximum atropine doses for this scenario.");
     return;
   }
-
-
 
 
   if (sim.vitals.hr > 60) {
@@ -2997,14 +2396,10 @@ function giveAtropine() {
   }
 
 
-
-
   sim.interventions.atropineCount++;
   logAction(`Atropine x${sim.interventions.atropineCount}`);
   updateAllDisplays();
 }
-
-
 
 
 function givePushEpi() {
@@ -3015,22 +2410,16 @@ function givePushEpi() {
   }
 
 
-
-
   sim.interventions.pushEpiCount++;
   sim.vitals.sbp = clamp(sim.vitals.sbp + 14, 55, 210);
   sim.vitals.dbp = clamp(sim.vitals.dbp + 8, 35, 140);
   sim.vitals.hr = clamp(sim.vitals.hr + 6, 30, 180);
 
 
-
-
   logAction(`Push-dose epinephrine x${sim.interventions.pushEpiCount}`);
   showFeedback("Push-dose epinephrine — BP/HR response.");
   updateAllDisplays();
 }
-
-
 
 
 /* Pressors */
@@ -3045,8 +2434,6 @@ function startPressor(isTransport = false) {
   if (!ensureDripLine("pressors")) return;
 
 
-
-
   // Scoring: starting pressors with normal BP is unnecessary.
   const sbp = sim.vitals.sbp;
   if (sbp >= 110 && sim.patient.mentalStatus === "alert") {
@@ -3058,29 +2445,19 @@ function startPressor(isTransport = false) {
   }
 
 
-
-
   const ui = getPressorUI(isTransport);
   const med = ui.medSelect ? ui.medSelect.value : "norepi";
-
-
 
 
   sim.interventions.pressorActive = true;
   sim.interventions.pressorMed = med;
 
 
-
-
   if (sim.interventions.pressorRate === 0) sim.interventions.pressorRate = 6;
-
-
 
 
   showFeedback(`Pressor started: ${med.toUpperCase()}`);
   logActionOnce(`pressorStart-${med}`, `Pressor started: ${med}`);
-
-
 
 
   updatePressorDisplays();
@@ -3088,8 +2465,6 @@ function startPressor(isTransport = false) {
 function stopPressor() {
   sim.interventions.pressorActive = false;
   sim.interventions.pressorRate = 0;
-
-
 
 
   showFeedback("Pressors stopped.");
@@ -3101,19 +2476,13 @@ function setPressorRateFromUI(isTransport = false) {
   if (!ui.rate) return;
 
 
-
-
   const now = Date.now();
   if (lastActionTime["pressor"] && now - lastActionTime["pressor"] < 250) return;
   lastActionTime["pressor"] = now;
 
 
-
-
   sim.interventions.pressorRate = Number(ui.rate.value);
   sim.interventions.pressorActive = sim.interventions.pressorRate > 0;
-
-
 
 
   updatePressorDisplays();
@@ -3129,14 +2498,10 @@ function updatePressorDisplays() {
   const ui2 = getPressorUI(true);
 
 
-
-
   const text =
     sim.interventions.pressorActive && sim.interventions.pressorRate > 0
       ? `${sim.interventions.pressorMed.toUpperCase()} running — Rate: ${sim.interventions.pressorRate}/20`
       : "Off";
-
-
 
 
   [ui1, ui2].forEach((ui) => {
@@ -3144,8 +2509,6 @@ function updatePressorDisplays() {
     if (ui.status) ui.status.innerText = text;
   });
 }
-
-
 
 
 /* Transport flow */
@@ -3165,11 +2528,7 @@ function chooseDestination(dest) {
   logActionOnce(`dest-${dest}`, `Destination: ${dest}`);
 
 
-
-
   sim.transportSecondsRemaining = dest === "cath" ? 90 : 60;
-
-
 
 
   sim.phase = "transport";
@@ -3177,8 +2536,6 @@ function chooseDestination(dest) {
   showScreen("transportScreen");
   // Start with no tab open so the scene is visible.
   showTab("__none__");
-
-
 
 
   updateAllDisplays();
@@ -3196,12 +2553,8 @@ function updateTransportTimerUI() {
 }
 
 
-
-
 function startTransportTimer() {
   if (sim.transportInterval) clearInterval(sim.transportInterval);
-
-
 
 
   updateTransportTimerUI();
@@ -3214,8 +2567,6 @@ function startTransportTimer() {
     }
   }, 1000);
 }
-
-
 
 
 function stopScenarioEngines() {
@@ -3232,8 +2583,6 @@ function stopScenarioEngines() {
   updateBpCycleLabel();
 
 
-
-
   if (typeof rhythmEngine !== "undefined") {
     rhythmEngine.running = false;
     if (rhythmEngine.rafId) {
@@ -3243,8 +2592,6 @@ function stopScenarioEngines() {
   }
 
 
-
-
   sim.alarms.active = false;
   sim.alarms.reasons = [];
   sim.alarms.lastBeepAt = 0;
@@ -3252,19 +2599,59 @@ function stopScenarioEngines() {
 }
 
 
-
-
 /** Min seconds alert in sim before “expected” aspirin (PO) — skips penalty if altered/unresponsive most of the run or only wakes at the end. */
 const ASPIRIN_EXPECT_ALERT_SEC = 45;
 
 
+function buildBadActionHintsForDebrief() {
+  const seen = new Set();
+  const parts = [];
+  const push = (s) => {
+    if (!s || seen.has(s)) return;
+    seen.add(s);
+    parts.push(s);
+  };
 
 
-/* End screen */
-function calculateScore() {
+  for (const a of sim.actionsLog || []) {
+    const t = a.text || "";
+    if (t.includes("Incorrect primary priority")) push("Primary survey: incorrect priority once.");
+    if (t.includes("Incorrect ECG interpretation")) push("12-lead: incorrect pattern once.");
+  }
+
+
+  if ((sim.actionsLog || []).some((a) => String(a.text || "").includes("Zofran") && String(a.text || "").includes("not indicated"))) {
+    push("Zofran given without nausea.");
+  }
+
+
+  if ((sim.actionsLog || []).some((a) => String(a.text || "").includes("No IV access"))) push("IV/fluid action without access.");
+  if ((sim.actionsLog || []).some((a) => String(a.text || "").includes("Need a second IV"))) push("Second drip without second IV line.");
+
+
+  if (sim.unnecessaryLog && sim.unnecessaryLog.length) {
+    sim.unnecessaryLog.slice(0, 8).forEach((m) => push(m));
+  }
+
+
+  return parts.join(" ");
+}
+
+
+/**
+ * Single source of truth for scoring + debrief breakdown.
+ * Each deduction includes a short teaching line for the results screen.
+ */
+function computeScenarioScore() {
+  const items = [];
+  const strengths = [];
   let score = 100;
 
 
+  const addDeduction = (delta, title, teaching) => {
+    score += delta;
+    items.push({ delta, title, teaching: teaching || "" });
+  };
 
 
   if (
@@ -3272,54 +2659,119 @@ function calculateScore() {
     sim.patient.allergy !== "Aspirin" &&
     (sim.alertContactSeconds || 0) >= ASPIRIN_EXPECT_ALERT_SEC
   ) {
-    score -= 30;
+    addDeduction(
+      -30,
+      "Aspirin not given (expected when patient had adequate alert time and no aspirin allergy)",
+      "Early antiplatelet therapy is a core ACS intervention when PO medications are safe and not contraindicated."
+    );
   }
-  if (sim.interventions.nitroCount === 0 && sim.caseType !== "inferior") score -= 12;
 
 
+  if (sim.interventions.nitroCount === 0 && sim.caseType !== "inferior") {
+    if (sim.vitals.sbp >= 100) {
+      addDeduction(
+        -12,
+        "No nitroglycerin (non-inferior pattern; end SBP ≥ 100)",
+        "When blood pressure allows and there are no contraindications, nitroglycerin is commonly used for ACS-related chest pain in teaching scenarios."
+      );
+    } else {
+      strengths.push("Nitroglycerin withheld with end SBP < 100 — appropriate low-BP caution (no deduction for missing nitro).");
+    }
+  }
 
 
   if (sim.caseType === "inferior" && sim.interventions.nitroCount > 0 && sim.vitals.sbp < 110) {
-    score -= 12;
+    addDeduction(
+      -12,
+      "Nitroglycerin with borderline/low BP (inferior pattern; RV concern)",
+      "Inferior STEMI may involve RV preload dependence — reassess perfusion before repeat nitro."
+    );
   }
 
 
+  if (sim.vitals.spo2 < 90 && sim.interventions.oxygenMode === "room_air") {
+    addDeduction(
+      -15,
+      "Hypoxia (SpO₂ < 90%) on room air at scenario end",
+      "Treat meaningful hypoxia with oxygen and reassess work of breathing."
+    );
+  }
 
 
-  if (sim.vitals.spo2 < 90 && sim.interventions.oxygenMode === "room_air") score -= 15;
+  if (sim.vitals.sbp < 90 && sim.interventions.fluidGiven < 250 && !sim.interventions.pressorActive) {
+    addDeduction(
+      -20,
+      "Hypotension (SBP < 90) without adequate fluid bolus or pressor support",
+      "When hypotension is symptomatic and protocol supports it, address perfusion with volume and/or vasopressors."
+    );
+  }
 
 
+  if (sim.patient.chf && sim.patient.lungSounds === "rales") {
+    addDeduction(
+      -10,
+      "Worsening pulmonary congestion / rales with CHF context",
+      "Fluids and overload can worsen CHF — monitor breathing sounds and SpO₂."
+    );
+  }
 
 
-  if (sim.vitals.sbp < 90 && sim.interventions.fluidGiven < 250 && !sim.interventions.pressorActive) score -= 20;
-
-
-
-
-  if (sim.patient.chf && sim.patient.lungSounds === "rales") score -= 10;
-  if (sim.patient.mentalStatus === "unresponsive") score -= 15;
-
-
+  if (sim.patient.mentalStatus === "unresponsive") {
+    addDeduction(
+      -15,
+      "Patient unresponsive at scenario end",
+      "Unresponsive patients need airway, breathing, circulation, and reversal of reversible causes before PO meds."
+    );
+  }
 
 
   if (isStemiCase()) {
-    if (sim.transportMode && sim.transportMode !== "emergent") score -= 18;
-    if (sim.destination && sim.destination !== "cath") score -= 22;
+    if (sim.transportMode && sim.transportMode !== "emergent") {
+      addDeduction(
+        -18,
+        "STEMI pattern: non-emergent transport selected",
+        "ST-elevation ACS is time-sensitive; emergent transport is typically expected when clinically appropriate."
+      );
+    }
+    if (sim.destination && sim.destination !== "cath") {
+      addDeduction(
+        -22,
+        "STEMI pattern: destination not cath/PCI-capable",
+        "Timely reperfusion favors routing to a cath-capable facility when available and indicated."
+      );
+    }
   }
 
 
+  const badPts = sim.badActions * 5;
+  if (badPts) {
+    const hint = buildBadActionHintsForDebrief();
+    addDeduction(
+      -badPts,
+      `Mistimed / not-indicated actions (${sim.badActions} × 5 points)`,
+      hint || "Open Patient Notes to see the full action log and align choices with vitals and presentation."
+    );
+  }
 
 
-  score -= sim.badActions * 5;
-  score -= sim.recklessActions * 15;
+  const reckPts = sim.recklessActions * 15;
+  if (reckPts) {
+    addDeduction(
+      -reckPts,
+      `High-risk or contraindicated actions (${sim.recklessActions} × 15 points)`,
+      "Examples include nitro with PDE5 use, nitro with SBP < 100, nitro with suspected RV involvement, or meds despite allergy — per sim rules."
+    );
+  }
 
 
-
-
-  return clamp(score, 0, 100);
+  score = clamp(score, 0, 100);
+  return { score, items, strengths };
 }
 
 
+function calculateScore() {
+  return computeScenarioScore().score;
+}
 
 
 function getGrade(score) {
@@ -3330,18 +2782,12 @@ function getGrade(score) {
 }
 
 
-
-
 function endScenario() {
   stopScenarioEngines();
 
 
-
-
-  const score = calculateScore();
+  const { score, items, strengths } = computeScenarioScore();
   const grade = getGrade(score);
-
-
 
 
   const gradeClass =
@@ -3351,136 +2797,76 @@ function endScenario() {
     "grade-poor";
 
 
-
-
-  const didWell = [];
-  const improve = [];
-
-
+  const positives = [];
+  strengths.forEach((s) => positives.push(s));
 
 
   if (sim.interventions.aspirinGiven || sim.patient.allergy === "Aspirin") {
-    didWell.push("Addressed aspirin appropriately.");
-  } else if ((sim.alertContactSeconds || 0) >= ASPIRIN_EXPECT_ALERT_SEC) {
-    improve.push("Consider aspirin when not allergic and the patient can safely take it.");
+    positives.push("Addressed aspirin appropriately (given when safe, or correctly avoided with allergy).");
   }
 
 
-
-
-  /* Mirrors `calculateScore()` nitro rules so “Needs improvement” explains point losses. */
-  if (sim.interventions.nitroCount === 0 && sim.caseType !== "inferior") {
-    improve.push(
-      "Consider nitroglycerin for ACS-related chest pain when blood pressure allows and there are no contraindications (per protocol)."
-    );
-  }
-  if (sim.caseType === "inferior" && sim.interventions.nitroCount > 0 && sim.vitals.sbp < 110) {
-    improve.push(
-      "Use caution repeating nitroglycerin in inferior/RV-involvement patterns when blood pressure is borderline — reassess perfusion."
-    );
+  if (sim.vitals.spo2 < 90 && sim.interventions.oxygenMode !== "room_air") {
+    positives.push("Treated hypoxia with supplemental oxygen.");
   }
 
 
-
-
-  if (sim.vitals.spo2 < 90 && sim.interventions.oxygenMode !== "room_air") didWell.push("Treated hypoxia with oxygen.");
-  if (sim.vitals.spo2 < 90 && sim.interventions.oxygenMode === "room_air") improve.push("Treat hypoxia earlier with oxygen.");
-
-
-
-
-  if (sim.vitals.sbp < 90 && sim.interventions.fluidGiven < 250 && !sim.interventions.pressorActive) {
-    improve.push("Hypotension: consider volume and/or vasopressor support when indicated — titrate to perfusion.");
+  if (sim.recklessActions === 0) {
+    positives.push("No reckless / contraindicated interventions counted by the sim.");
   }
-
-
-
-
-  if (sim.patient.mentalStatus === "unresponsive") {
-    improve.push("Patient became unresponsive — prioritize airway, perfusion, and reversible causes; avoid further harm.");
-  }
-
-
-
-
-  if (sim.recklessActions === 0) didWell.push("Avoided contraindicated/high-risk interventions.");
-  else improve.push("Avoid contraindicated/high-risk interventions (reckless actions).");
-
-
-
-
-  if (sim.patient.chf && sim.patient.lungSounds === "rales") improve.push("Be cautious with fluids in CHF; monitor for rales/overload.");
-
-
-
-
-  if (sim.unnecessaryLog && sim.unnecessaryLog.length) {
-    improve.push("Avoid unnecessary interventions when vitals do not indicate them:");
-    sim.unnecessaryLog.slice(0, 6).forEach((m) => improve.push(m));
-  }
-
-
-
-
-  if (sim.badActions > 0) {
-    improve.push("Some actions were not indicated for the moment — tighten choices to what vitals and presentation support.");
-  }
-
-
 
 
   if (isStemiCase()) {
     const stemiOptimal = sim.transportMode === "emergent" && sim.destination === "cath";
     if (stemiOptimal) {
-      didWell.push("STEMI pathway: emergent transport toward PCI/cath-capable care.");
-    } else {
-      improve.push(
-        "STEMI: time-sensitive reperfusion — emergent priority and a cath/PCI-capable destination are expected when available. Non-emergent transport or routing only to a local non-PCI facility can delay definitive care and does not match typical STEMI systems of care."
-      );
-      improve.push(
-        "Patient care may be delayed when the destination does not support timely reperfusion for ST-elevation ACS."
-      );
+      positives.push("STEMI pathway: emergent transport toward PCI/cath-capable care.");
     }
   } else if (sim.caseType === "nstemi") {
-    didWell.push(
-      "NSTEMI: emergent vs non-emergent transport and local vs PCI hospital can both be appropriate — follow your regional risk stratification and protocols."
+    positives.push(
+      "NSTEMI: transport and destination choices can vary with risk — follow your regional protocols."
     );
   }
 
 
+  const breakdownHtml = items.length
+    ? items
+        .map((it) => {
+          const sub = it.teaching ? `<div class="scoreTeaching">${it.teaching}</div>` : "";
+          return `<div class="scoreBreakdownItem"><span class="scoreDelta">${it.delta}</span><span class="scoreDeductionTitle">${it.title}</span>${sub}</div>`;
+        })
+        .join("")
+    : `<p class="scoreNoDeductions">• No deductions — full credit on all scored items this run.</p>`;
 
 
-  /* If score dropped but no line above fired, still explain the gap (keeps debrief in sync with `calculateScore`). */
-  if (improve.length === 0 && score < 100) {
-    improve.push(
-      "Review timing and ACS adjuncts (e.g., nitroglycerin when appropriate), oxygen/perfusion, and transport against your protocols — scoring withheld partial credit somewhere above."
-    );
-  }
-
-
+  const positivesHtml = positives.length
+    ? positives.map((x) => `• ${x}`).join("<br>")
+    : "• —";
 
 
   const summary = document.getElementById("finalSummary");
   if (summary) {
     summary.innerHTML = `
-      <div><strong>Final Score:</strong> ${score}</div>
-      <div class="gradeBig ${gradeClass}">${grade}</div>
-
-
-
-
-      <div class="debriefBox">
-        <strong>What you did well</strong><br>
-        ${didWell.length ? didWell.map(x => `• ${x}`).join("<br>") : "• —"}
+      <div class="scoreHead">
+        <div><strong>Scenario score:</strong> <span class="scoreNumber">${score}</span><span class="scoreOutOf"> / 100</span></div>
+        <p class="scoreSub">Based on this patient’s presentation and your choices in this run (vitals and case type vary each time).</p>
+        <div class="gradeBig ${gradeClass}">${grade}</div>
       </div>
 
 
+      <div class="debriefBox scoreBreakdownBox">
+        <strong>How your score was calculated</strong>
+        <p class="scoreBreakdownLead">Starting from <strong>100</strong>. Each line below subtracts points only if it applied to this run:</p>
+        ${breakdownHtml}
+      </div>
 
 
       <div class="debriefBox">
-        <strong>Needs improvement</strong><br>
-        ${improve.length ? improve.map(x => `• ${x}`).join("<br>") : "• —"}
+        <strong>Strengths &amp; positives</strong><br>
+        ${positivesHtml}
       </div>
+
+
+      <p class="scoreNotesHint"><strong>Tip:</strong> Open <strong>Patient Notes</strong> for the full timed action log.</p>
     `;
   }
  
@@ -3488,18 +2874,12 @@ function endScenario() {
   if (caseStore) caseStore.value = sim.caseType || "";
 
 
-
-
   sim.lastScenarioScore = score;
   updateEndScreenLessonUI(score);
 
 
-
-
   showScreen("endScreen");
 }
-
-
 
 
 function updateEndScreenLessonUI(score) {
@@ -3508,11 +2888,7 @@ function updateEndScreenLessonUI(score) {
   if (!lessonBtn) return;
 
 
-
-
   const goodEnough = score >= 75;
-
-
 
 
   if (sim.runMode === "practice") {
@@ -3523,8 +2899,6 @@ function updateEndScreenLessonUI(score) {
     }
     return;
   }
-
-
 
 
   if (sim.runMode === "ce") {
@@ -3546,8 +2920,6 @@ function updateEndScreenLessonUI(score) {
   }
 
 
-
-
   lessonBtn.style.display = "inline-block";
   if (gateMsg) {
     gateMsg.style.display = "none";
@@ -3556,19 +2928,13 @@ function updateEndScreenLessonUI(score) {
 }
 
 
-
-
 /* Notes modal */
 function openNotes() {
   const panel = document.getElementById("notesPanel");
   if (!panel) return;
 
 
-
-
   panel.style.display = "block";
-
-
 
 
   const content = document.getElementById("notesContent");
@@ -3590,8 +2956,6 @@ function closeNotes() {
 }
 
 
-
-
 /* Monitor alarms + beep */
 function computeAlarmReasons() {
   const f = getMonitorAlarmFlags();
@@ -3608,12 +2972,8 @@ function setAlarmBanner(reasons) {
   const txt = on ? `ALARM: ${reasons.join(" / ")}` : "ALARM";
 
 
-
-
   const a = document.getElementById("alarmBannerAmbulance");
   const b = document.getElementById("alarmBannerTransport");
-
-
 
 
   [a, b].forEach((el) => {
@@ -3621,8 +2981,6 @@ function setAlarmBanner(reasons) {
     el.innerText = txt;
     el.classList.toggle("on", on);
   });
-
-
 
 
   /* Phone: scene-level cue when monitor drawer is closed / volume off */
@@ -3639,8 +2997,6 @@ function setAlarmBanner(reasons) {
   });
 
 
-
-
   document.querySelectorAll(".simAlarmSceneCue__detail").forEach((el) => {
     el.textContent = on && tip ? tip : "";
   });
@@ -3651,48 +3007,32 @@ function playAlarmBeep() {
     if (!AudioCtx) return;
 
 
-
-
     if (!playAlarmBeep.ctx) playAlarmBeep.ctx = new AudioCtx();
     const ctx = playAlarmBeep.ctx;
 
 
-
-
     if (ctx.state === "suspended") ctx.resume?.();
-
-
 
 
     const o = ctx.createOscillator();
     const g = ctx.createGain();
 
 
-
-
     o.type = "square";
     o.frequency.value = 880;
 
 
-
-
     g.gain.value = 0.0001;
-
-
 
 
     o.connect(g);
     g.connect(ctx.destination);
 
 
-
-
     const t0 = ctx.currentTime;
     g.gain.setValueAtTime(0.0001, t0);
     g.gain.exponentialRampToValueAtTime(0.12, t0 + 0.01);
     g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.12);
-
-
 
 
     o.start(t0);
@@ -3705,16 +3045,10 @@ function updateAlarms() {
   sim.alarms.active = reasons.length > 0;
 
 
-
-
   setAlarmBanner(reasons);
 
 
-
-
   if (!sim.alarms.active) return;
-
-
 
 
   const now = Date.now();
@@ -3723,8 +3057,6 @@ function updateAlarms() {
     playAlarmBeep();
   }
 }
-
-
 
 
 /* Rhythm strip renderer (no sweep line) */
@@ -3736,8 +3068,6 @@ const rhythmEngine = {
   t: 0,
   streams: new Map(),
 };
-
-
 
 
 function startRhythmRenderer() {
@@ -3757,12 +3087,8 @@ function rhythmLoop(ts) {
   rhythmEngine.t += Math.min(dt, 0.05);
 
 
-
-
   renderRhythmToCanvas("rhythmCanvasAmbulance");
   renderRhythmToCanvas("rhythmCanvasTransport");
-
-
 
 
   rhythmEngine.rafId = requestAnimationFrame(rhythmLoop);
@@ -3777,8 +3103,6 @@ function rrForCurrentRhythm(baseRR) {
   const mode = sim.patient.rhythmMode;
 
 
-
-
   if (mode === "afib") {
     const jitter = (Math.random() - 0.5) * 0.55;
     return clamp(baseRR + jitter, 0.35, 1.6);
@@ -3789,8 +3113,6 @@ function rrForCurrentRhythm(baseRR) {
   }
 
 
-
-
   const smallJitter = (Math.random() - 0.5) * 0.06;
   return clamp(baseRR + smallJitter, 0.35, 1.7);
 }
@@ -3798,37 +3120,25 @@ function scheduleBeats(stream, rightT, baseRR) {
   const mode = sim.patient.rhythmMode;
 
 
-
-
   while (stream.nextBeatT < rightT + 1.0) {
     let rr = rrForCurrentRhythm(baseRR);
     let type = "normal";
-
-
 
 
     const baselinePVC = mode === "pvc" ? 0.08 : 0.0;
     const baselinePAC = mode === "sinus_pac" ? 0.09 : 0.0;
 
 
-
-
     if (mode === "pvc" && Math.random() < baselinePVC) type = "pvc";
     if (mode === "sinus_pac" && Math.random() < baselinePAC) type = "pac";
-
-
 
 
     if (type === "pac") rr *= 0.70;
     if (type === "pvc") rr *= 0.62;
 
 
-
-
     stream.beats.push({ t: stream.nextBeatT, type });
     stream.nextBeatT += rr;
-
-
 
 
     if (stream.beats.length > 200) stream.beats.splice(0, stream.beats.length - 200);
@@ -3846,25 +3156,17 @@ function renderRhythmToCanvas(canvasId) {
   if (!canvas) return;
 
 
-
-
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
-
-
 
 
   const w = canvas.width;
   const h = canvas.height;
 
 
-
-
   ctx.clearRect(0, 0, w, h);
   ctx.fillStyle = "#020202";
   ctx.fillRect(0, 0, w, h);
-
-
 
 
   ctx.strokeStyle = "rgba(0,255,102,0.05)";
@@ -3883,17 +3185,11 @@ function renderRhythmToCanvas(canvasId) {
   }
 
 
-
-
   const stream = getStream(canvasId);
-
-
 
 
   const hr = clamp(sim.vitals.hr, 30, 180);
   const baseRR = 60 / hr;
-
-
 
 
   const windowSec = 4.2;
@@ -3901,11 +3197,7 @@ function renderRhythmToCanvas(canvasId) {
   const rightT = rhythmEngine.t;
 
 
-
-
   scheduleBeats(stream, rightT, baseRR);
-
-
 
 
   ctx.strokeStyle = "#00ff66";
@@ -3913,25 +3205,17 @@ function renderRhythmToCanvas(canvasId) {
   ctx.beginPath();
 
 
-
-
   const mid = Math.round(h * 0.55);
   const amp = h * 0.33;
-
-
 
 
   for (let x = 0; x < w; x++) {
     const t = leftT + (x / w) * windowSec;
 
 
-
-
     let y = 0.0;
     y += (Math.sin(t * 22) * 0.02);
     y += ((Math.random() - 0.5) * 0.008);
-
-
 
 
     const beat = findNearestBeat(stream, t);
@@ -3940,12 +3224,8 @@ function renderRhythmToCanvas(canvasId) {
       const mode = sim.patient.rhythmMode;
 
 
-
-
       const isPVC = beat.type === "pvc";
       const isPAC = beat.type === "pac";
-
-
 
 
       if (mode !== "afib" && !isPVC) {
@@ -3954,12 +3234,8 @@ function renderRhythmToCanvas(canvasId) {
       }
 
 
-
-
       const qrsWidth = isPVC ? 0.042 : 0.018;
       const qrsAmp = isPVC ? 1.35 : 1.0;
-
-
 
 
       y += (-0.25 * qrsAmp) * Math.exp(-Math.pow((dtBeat + 0.012) / (qrsWidth * 0.65), 2));
@@ -3967,13 +3243,9 @@ function renderRhythmToCanvas(canvasId) {
       y += (-0.40 * qrsAmp) * Math.exp(-Math.pow((dtBeat - 0.016) / (qrsWidth * 0.85), 2));
 
 
-
-
       const tAmp = isPVC ? 0.22 : 0.28;
       y += tAmp * Math.exp(-Math.pow((dtBeat - 0.10) / 0.05, 2));
     }
-
-
 
 
     const py = mid - y * amp;
@@ -3982,11 +3254,7 @@ function renderRhythmToCanvas(canvasId) {
   }
 
 
-
-
   ctx.stroke();
-
-
 
 
   ctx.fillStyle = "rgba(0,255,102,0.75)";
@@ -3995,11 +3263,7 @@ function renderRhythmToCanvas(canvasId) {
 }
 
 
-
-
 /* ========= Lesson / quiz / demo certificate ========= */
-
-
 
 
 const LESSON_CASE_LABELS = {
@@ -4008,8 +3272,6 @@ const LESSON_CASE_LABELS = {
   lateral: "Lateral STEMI",
   nstemi: "NSTEMI (no STEMI pattern)",
 };
-
-
 
 
 let lessonFlow = {
@@ -4022,8 +3284,6 @@ let lessonFlow = {
 };
 
 
-
-
 function getLessonCaseKey() {
   const hid = document.getElementById("scenarioCaseType");
   const fromDom = hid && hid.value;
@@ -4033,16 +3293,12 @@ function getLessonCaseKey() {
 }
 
 
-
-
 function clearLessonTimers() {
   if (lessonFlow.waitTimer) clearTimeout(lessonFlow.waitTimer);
   if (lessonFlow.countdownTimer) clearInterval(lessonFlow.countdownTimer);
   lessonFlow.waitTimer = null;
   lessonFlow.countdownTimer = null;
 }
-
-
 
 
 function buildLessonSlides(key) {
@@ -4064,8 +3320,6 @@ function buildLessonSlides(key) {
     ],
     lockSeconds: 5,
   };
-
-
 
 
   if (key === "inferior") {
@@ -4157,8 +3411,6 @@ function buildLessonSlides(key) {
 }
 
 
-
-
 const LESSON_QUIZ = {
   inferior: [
     { q: "Which leads most specific to inferior STEMI in this sim?", opts: ["V1–V4", "II, III, aVF", "I, aVL, V5–V6"], a: 1 },
@@ -4207,8 +3459,6 @@ const LESSON_QUIZ = {
 };
 
 
-
-
 function openLessonFlow() {
   if (sim.runMode === "ce" && (sim.lastScenarioScore == null || sim.lastScenarioScore < 75)) {
     showFeedback("Earn a Good score (75+) in CE mode to unlock the lesson.");
@@ -4220,19 +3470,13 @@ function openLessonFlow() {
   lessonFlow.slideIndex = 0;
 
 
-
-
   const tag = document.getElementById("lessonCaseTag");
   if (tag) tag.textContent = LESSON_CASE_LABELS[lessonFlow.caseKey] || lessonFlow.caseKey;
-
-
 
 
   showScreen("lessonScreen");
   renderLessonSlide();
 }
-
-
 
 
 function renderLessonSlide() {
@@ -4243,12 +3487,8 @@ function renderLessonSlide() {
   const nextBtn = document.getElementById("lessonNextBtn");
 
 
-
-
   const slide = lessonFlow.slides[lessonFlow.slideIndex];
   if (!slide) return;
-
-
 
 
   if (headline) headline.textContent = slide.headline;
@@ -4263,8 +3503,6 @@ function renderLessonSlide() {
   }
 
 
-
-
   if (nextBtn) {
     nextBtn.disabled = true;
     nextBtn.textContent = lessonFlow.slideIndex + 1 >= lessonFlow.slides.length ? "Start quiz" : "Next";
@@ -4272,13 +3510,9 @@ function renderLessonSlide() {
   }
 
 
-
-
   const sec = Math.max(2, Math.min(12, slide.lockSeconds || 4));
   lessonFlow.remainingSec = sec;
   if (note) note.textContent = `Next unlocks in ${lessonFlow.remainingSec}s…`;
-
-
 
 
   clearLessonTimers();
@@ -4297,8 +3531,6 @@ function renderLessonSlide() {
 }
 
 
-
-
 function onLessonNextClick() {
   if (lessonFlow.slideIndex + 1 >= lessonFlow.slides.length) {
     clearLessonTimers();
@@ -4308,8 +3540,6 @@ function onLessonNextClick() {
   lessonFlow.slideIndex += 1;
   renderLessonSlide();
 }
-
-
 
 
 function openQuizScreen() {
@@ -4356,8 +3586,6 @@ function openQuizScreen() {
 }
 
 
-
-
 function submitLessonQuiz() {
   const list = LESSON_QUIZ[lessonFlow.caseKey] || LESSON_QUIZ.inferior;
   let correct = 0;
@@ -4380,13 +3608,9 @@ function submitLessonQuiz() {
 }
 
 
-
-
 function retryLessonQuiz() {
   openQuizScreen();
 }
-
-
 
 
 function goToCertName() {
@@ -4396,13 +3620,9 @@ function goToCertName() {
 }
 
 
-
-
 function backFromCertName() {
   showScreen("quizScreen");
 }
-
-
 
 
 function showCertificate() {
@@ -4422,8 +3642,6 @@ function showCertificate() {
 }
 
 
-
-
 function closeLessonFlow() {
   clearLessonTimers();
   showScreen("endScreen");
@@ -4431,15 +3649,11 @@ function closeLessonFlow() {
 }
 
 
-
-
 function closeLessonFlowFromQuiz() {
   clearLessonTimers();
   showScreen("endScreen");
   if (sim.lastScenarioScore != null) updateEndScreenLessonUI(sim.lastScenarioScore);
 }
-
-
 
 
 /** Base scene uses CSS background (not <img>); force resolved URLs for file:// / odd paths. */
@@ -4455,8 +3669,6 @@ function ensureSimSceneImageUrls() {
     const hostedIvRight = "https://i.imgur.com/ygDM2Md.png";
     const hostedFluidsLeft = "https://i.imgur.com/k2UMBRU.png";
     const hostedDripRight = "https://i.imgur.com/Y85BAx0.png";
-
-
 
 
     const urlA = hostedA || new URL("a.png", base).href;
@@ -4498,8 +3710,6 @@ if (document.readyState === "loading") {
 }
 
 
-
-
 function initActionTooltips() {
   const hints = {
     airway: "Check airway patency first.",
@@ -4518,16 +3728,12 @@ function initActionTooltips() {
   };
 
 
-
-
   document.querySelectorAll("button[data-action]").forEach((btn) => {
     const key = btn.getAttribute("data-action");
     const hint = hints[key];
     if (hint && !btn.getAttribute("title")) btn.setAttribute("title", hint);
   });
 }
-
-
 
 
 // Simple press-and-hold hint for touch users.
@@ -4551,16 +3757,12 @@ function showHoldTip(target, text) {
   holdTipEl.textContent = text;
 
 
-
-
   const r = target.getBoundingClientRect();
   holdTipEl.style.left = `${Math.max(10, Math.min(window.innerWidth - 290, r.left))}px`;
   holdTipEl.style.top = `${Math.max(10, r.top - 44)}px`;
   document.body.appendChild(holdTipEl);
   setTimeout(() => holdTipEl && holdTipEl.remove(), 2200);
 }
-
-
 
 
 document.addEventListener("touchstart", (e) => {
@@ -4573,8 +3775,6 @@ document.addEventListener("touchend", () => {
   if (holdTimer) clearTimeout(holdTimer);
   holdTimer = null;
 }, { passive: true });
-
-
 
 
 if (document.readyState === "loading") {
