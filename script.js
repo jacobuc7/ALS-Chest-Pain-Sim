@@ -113,6 +113,8 @@ let sim = {
   _lungFluidStrain: 0,
   /** Tracks symptomatic bradycardia detection + treatment for scoring/teaching. */
   _brady: { symptomaticSeconds: 0, atropineGivenWhenIndicated: false },
+  /** Tracks aspirin being given while AMS (PO safety teaching). */
+  _asaGivenWhenAltered: false,
 
 
   /** "practice" | "ce" | null — set from launcher; not cleared by resetSim() */
@@ -688,6 +690,7 @@ function resetSim() {
 
   sim._lungFluidStrain = 0;
   sim._brady = { symptomaticSeconds: 0, atropineGivenWhenIndicated: false };
+  sim._asaGivenWhenAltered = false;
 
 
   sim.lastScenarioScore = null;
@@ -2238,8 +2241,20 @@ function giveAspirin() {
     return;
   }
 
+  // PO meds are not appropriate if the patient can't protect their airway.
+  if (sim.patient.mentalStatus === "unresponsive") {
+    showFeedback("Aspirin failed — patient is unresponsive.");
+    pushEffectChip("Aspirin failed (unresponsive)", "bad");
+    logActionOnce("asaFailUnresp", "Aspirin attempted while patient unresponsive (failed)");
+    return;
+  }
 
-  if (sim.patient.allergy === "Aspirin") {
+  // If altered, allow the click (teaching point), but score it slightly later.
+  if (sim.patient.mentalStatus === "altered") {
+    sim._asaGivenWhenAltered = true;
+    showFeedback("Aspirin given — caution: patient altered.");
+    logActionOnce("asaAltered", "Aspirin given with altered mental status (caution)");
+  } else if (sim.patient.allergy === "Aspirin") {
     sim.recklessActions++;
     showFeedback("Allergic to aspirin!");
     logActionOnce("asaAllergy", "Aspirin given despite allergy");
@@ -2247,7 +2262,6 @@ function giveAspirin() {
     showFeedback("Aspirin given.");
     logActionOnce("asa", "Aspirin given");
   }
-
 
   sim.interventions.aspirinGiven = true;
   updateAllDisplays();
@@ -2716,6 +2730,17 @@ function computeScenarioScore() {
       -30,
       "Aspirin not given (expected when patient had adequate alert time and no aspirin allergy)",
       "Early antiplatelet therapy is a core ACS intervention when PO medications are safe and not contraindicated."
+    );
+  }
+
+  // Small penalty: aspirin given while AMS (PO medication safety).
+  // This doesn't create a "lose-lose" because the main "missed aspirin" penalty only applies
+  // after sufficient ALERT time (alertContactSeconds).
+  if (sim.interventions.aspirinGiven && sim._asaGivenWhenAltered) {
+    addDeduction(
+      -4,
+      "Aspirin given with altered mental status (PO safety concern)",
+      "If mental status is altered, consider airway protection and whether PO meds are safe; reassess and follow protocol."
     );
   }
 
