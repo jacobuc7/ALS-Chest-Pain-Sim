@@ -305,6 +305,11 @@ button.mainBtn:hover {
   pointer-events: none;
 }
 
+#feedbackBox.feedbackBad {
+  color: #ffd2d2;
+  border-left-color: rgba(255, 80, 80, 0.9);
+ }
+
 
 .modalContentTall{
   display:flex;
