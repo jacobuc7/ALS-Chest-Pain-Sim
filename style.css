@@ -1541,9 +1541,10 @@ button.mainBtn:hover {
 
   #feedbackBox {
     left: 8px;
-    right: 8px;
+    right: auto;
     bottom: max(12px, env(safe-area-inset-bottom));
-    max-width: none;
+    width: fit-content;
+    max-width: calc(100vw - 16px);
     font-size: 13px;
   }
 
@@ -1739,6 +1740,8 @@ button.mainBtn:hover {
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    /* Extra space so last med (e.g. Push epi) can scroll above edge */
+    padding-bottom: max(28px, calc(env(safe-area-inset-bottom) + 18px));
   }
 
 
