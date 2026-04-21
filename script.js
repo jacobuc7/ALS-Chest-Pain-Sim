@@ -111,6 +111,8 @@ let sim = {
   unnecessaryLog: [],
   /** Accumulated lung congestion from fluid load (any patient); drives rales + SpO₂ drop. */
   _lungFluidStrain: 0,
+  /** Tracks symptomatic bradycardia detection + treatment for scoring/teaching. */
+  _brady: { symptomaticSeconds: 0, atropineGivenWhenIndicated: false },
 
 
   /** "practice" | "ce" | null — set from launcher; not cleared by resetSim() */
@@ -681,6 +683,7 @@ function resetSim() {
 
 
   sim._lungFluidStrain = 0;
+  sim._brady = { symptomaticSeconds: 0, atropineGivenWhenIndicated: false };
 
 
   sim.lastScenarioScore = null;
@@ -900,10 +903,11 @@ function generatePatient() {
     hr += rand(4, 14);
     const driftAmt = 0.062;
     const dMode = Math.random();
-    if (dMode < 0.55) {
+    // Severe STEMI more often destabilizes en-route (adds time pressure).
+    if (dMode < 0.40) {
       sim.patient.hemodynamicDrift = driftAmt;
       sim.patient.driftStartMode = "immediate";
-    } else if (dMode < 0.78) {
+    } else if (dMode < 0.65) {
       sim.patient.hemodynamicDrift = 0;
       sim.patient.pendingHemodynamicDrift = driftAmt;
       sim.patient.driftStartMode = "delayed_scene";
@@ -1506,12 +1510,28 @@ function startVitalsEngine() {
     }
 
 
-    if (sim.vitals.sbp < 85 && sim.patient.mentalStatus === "alert") sim.patient.mentalStatus = "altered";
-    if (sim.hypotensionSeconds >= 8) {
-      if (sim.patient.mentalStatus !== "unresponsive" && Math.random() < 0.35) {
+    // --- Perfusion / mental status ladder (gives warning signs before full "unresponsive") ---
+    const hrNow = sim.vitals.hr;
+    const sbpNow = sim.vitals.sbp;
+    const symptomaticBradyNow =
+      hrNow < 50 && (sim.patient.symptomaticBrady || sim.patient.mentalStatus !== "alert" || sbpNow < 100);
+    if (symptomaticBradyNow) sim._brady.symptomaticSeconds += 1;
+
+    // Earlier "worsening" signs when perfusion is dropping.
+    if (sbpNow < 92 && sim.patient.mentalStatus === "alert") sim.patient.mentalStatus = "altered";
+    if (hrNow < 44 && sbpNow < 100 && sim.patient.mentalStatus === "alert") sim.patient.mentalStatus = "altered";
+
+    // Unresponsiveness becomes more likely when hypotension is sustained, especially en-route.
+    if (sim.hypotensionSeconds >= 7) {
+      const base = sim.phase === "transport" ? 0.55 : 0.32;
+      const severeBoost = sim.patient.stemiSeverity === "severe" ? 0.12 : 0;
+      const p = Math.min(0.82, base + severeBoost);
+      if (sim.patient.mentalStatus !== "unresponsive" && Math.random() < p) {
         sim.patient.mentalStatus = "unresponsive";
         logActionOnce("unresponsive", "Patient became unresponsive (hypotension)");
         showFeedback("Patient became unresponsive.");
+        pushEffectChip("UNRESPONSIVE", "bad");
+        soundBad();
       }
     }
 
@@ -1804,6 +1824,13 @@ function updatePatientDialogue() {
 
     if (sim.patient.mentalStatus === "unresponsive") {
       message = "(Unresponsive)";
+    } else if (sim.patient.mentalStatus === "altered") {
+      message = pickOne("altered", [
+        "I’m so dizzy… it’s hard to stay awake…",
+        "Everything feels like it’s fading…",
+        "I’m really weak…",
+        "I… can’t focus…",
+      ]);
     } else {
       // Context-first dialogue (one random line per state, held for a few seconds).
       if (sim.vitals.sbp < 85) {
@@ -1840,8 +1867,8 @@ function updatePatientDialogue() {
         ]);
       } else if (sim.vitals.hr < 50) {
         message = pickOne("brady", [
-          "I feel really lightheaded…",
-          "I feel faint…",
+          "My heart feels slow… I’m getting lightheaded…",
+          "I feel faint… like I might pass out…",
           "I’m getting woozy…",
         ]);
       } else if (sim.interventions.nitroCount > 0 && sim.vitals.sbp < 100) {
@@ -2387,7 +2414,11 @@ function giveAtropine() {
   }
 
 
-  if (sim.vitals.hr > 60) {
+  const hr = sim.vitals.hr;
+  const sbp = sim.vitals.sbp;
+  const indicated = hr < 55 && (sim.patient.symptomaticBrady || sim.patient.mentalStatus !== "alert" || sbp < 100);
+
+  if (hr > 60) {
     showFeedback("Atropine not indicated.");
     markUnnecessary("atropine", "Atropine given with HR > 60 (not indicated).");
   } else {
@@ -2398,6 +2429,23 @@ function giveAtropine() {
 
   sim.interventions.atropineCount++;
   logAction(`Atropine x${sim.interventions.atropineCount}`);
+
+  // Immediate effect (felt): slight HR bump, and a small perfusion bump if BP isn't crashing.
+  if (indicated) {
+    sim._brady.atropineGivenWhenIndicated = true;
+    sim.vitals.hr = clamp(sim.vitals.hr + rand(6, 10), 30, 180);
+    if (sim.vitals.sbp >= 90) {
+      sim.vitals.sbp = clamp(sim.vitals.sbp + rand(2, 5), 55, 210);
+      sim.vitals.dbp = clamp(sim.vitals.dbp + rand(1, 3), 35, 140);
+    }
+    sim._dlg = sim._dlg || { overrides: [] };
+    sim._dlg.overrides = sim._dlg.overrides || [];
+    sim._dlg.overrides.push({ msg: "Okay… I feel less dizzy…", until: Date.now() + 6500 });
+    pushEffectChip("Atropine response", "good");
+    soundGood();
+  } else {
+    pushEffectChip("Atropine given", "warn");
+  }
   updateAllDisplays();
 }
 
@@ -2706,6 +2754,15 @@ function computeScenarioScore() {
     );
   }
 
+  // Symptomatic bradycardia: a small "atropine when appropriate" grading point.
+  if (sim._brady.symptomaticSeconds >= 8 && !sim._brady.atropineGivenWhenIndicated) {
+    addDeduction(
+      -8,
+      "Symptomatic bradycardia without atropine treatment",
+      "When bradycardia is symptomatic and perfusion is threatened, consider atropine per protocol (and support BP with fluids/pressors as indicated)."
+    );
+  }
+
 
   if (sim.patient.chf && sim.patient.lungSounds === "rales") {
     addDeduction(
@@ -2965,6 +3022,8 @@ function computeAlarmReasons() {
   if (f.lowSpo2) reasons.push("LOW SpO2");
   if (f.brady) reasons.push("BRADY");
   if (f.tachy) reasons.push("TACHY");
+  if (sim.patient.mentalStatus === "altered") reasons.push("AMS");
+  if (sim.patient.mentalStatus === "unresponsive") reasons.push("UNRESP");
   return reasons;
 }
 function setAlarmBanner(reasons) {
