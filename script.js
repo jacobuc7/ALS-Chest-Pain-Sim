@@ -475,10 +475,9 @@ function showFeedback(message) {
   box.style.opacity = "1";
   setTimeout(() => (box.style.opacity = "0.6"), 1500);
 
-
-  // Sound cues (subtle):
+  // Visual severity cue (green vs red). Keep logic aligned with sound triggers below.
   const msg = String(message || "").toLowerCase();
-  if (
+  const isBad =
     msg.includes("allergic") ||
     msg.includes("contraindicated") ||
     msg.includes("not indicated") ||
@@ -486,7 +485,12 @@ function showFeedback(message) {
     msg.includes("no iv access") ||
     msg.includes("need a second iv") ||
     msg.includes("oxygen not required") ||
-    msg.includes("incorrect")
+    msg.includes("incorrect");
+  box.classList.toggle("feedbackBad", isBad);
+
+  // Sound cues (subtle):
+  if (
+    isBad
   ) {
     soundBad();
   } else if (
@@ -1996,7 +2000,8 @@ function attemptIV() {
     }
     updateSimSceneOverlays();
   } else {
-    showFeedback("IV attempt failed.");
+    showFeedback("IV attempt failed — try again.");
+    pushEffectChip("IV failed — try again", "bad");
     logAction("IV attempt failed");
   }
 }
