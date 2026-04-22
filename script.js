@@ -115,6 +115,8 @@ let sim = {
   _brady: { symptomaticSeconds: 0, atropineGivenWhenIndicated: false },
   /** Tracks aspirin being given while AMS (PO safety teaching). */
   _asaGivenWhenAltered: false,
+  /** Zofran given when patient had no nausea (scoring uses opioids later as prophylaxis exception). */
+  _zofranGivenWithoutNausea: false,
 
 
   /** "practice" | "ce" | null — set from launcher; not cleared by resetSim() */
@@ -132,6 +134,10 @@ let sim = {
 
   badActions: 0,
   recklessActions: 0,
+  /** Each "not-indicated" / mistimed click (−5) with specific debrief text */
+  badActionLedger: [],
+  /** Each high-risk / contraindicated incident (−15) with specific debrief text */
+  recklessActionLedger: [],
 
 
   patient: {
@@ -416,7 +422,7 @@ function ensureDripLine(kind) {
   const ivCount = sim.interventions.ivSuccessCount || 0;
   if (ivCount < 1) {
     showFeedback("No IV access.");
-    sim.badActions++;
+    /* No score penalty — attempting to hang a drip before IV is normal trial-and-error. */
     return false;
   }
 
@@ -436,7 +442,7 @@ function ensureDripLine(kind) {
 
   if (usedCount === 1 && ivCount < 2) {
     showFeedback("Need a second IV for another drip.");
-    sim.badActions++;
+    /* No score penalty — learner is discovering line rules, not making a clinical error. */
     return false;
   }
 
@@ -691,6 +697,7 @@ function resetSim() {
   sim._lungFluidStrain = 0;
   sim._brady = { symptomaticSeconds: 0, atropineGivenWhenIndicated: false };
   sim._asaGivenWhenAltered = false;
+  sim._zofranGivenWithoutNausea = false;
 
 
   sim.lastScenarioScore = null;
@@ -698,6 +705,8 @@ function resetSim() {
 
   sim.badActions = 0;
   sim.recklessActions = 0;
+  sim.badActionLedger = [];
+  sim.recklessActionLedger = [];
 
 
   sim.patient = {
@@ -819,14 +828,35 @@ function resetSim() {
 }
 
 
+/** −5 each: not-indicated / mistimed (specific line on results screen). */
+function recordBadAction(title, teaching = "") {
+  sim.badActions++;
+  sim.badActionLedger.push({ title, teaching });
+}
+
+
+/** −15 each: contraindicated / high-risk per sim rules. */
+function recordRecklessAction(title, teaching = "") {
+  sim.recklessActions++;
+  sim.recklessActionLedger.push({ title, teaching });
+}
+
+
+const UNNECESSARY_TEACH = {
+  atropine:
+    "Atropine is for symptomatic bradycardia when indicated; it is not appropriate when the heart rate is already adequate.",
+  pressorsStable:
+    "Start vasopressors when perfusion/BP support is needed—not when blood pressure and mentation are stable.",
+};
+
+
 function markUnnecessary(key, message, severity = "bad") {
-  // severity: "bad" (score hit) or "reckless" (bigger score hit)
-  if (severity === "reckless") sim.recklessActions++;
-  else sim.badActions++;
+  const teaching = UNNECESSARY_TEACH[key] || "";
+  if (severity === "reckless") recordRecklessAction(message, teaching);
+  else recordBadAction(message, teaching);
 
 
   logActionOnce(`unnec-${key}`, message);
-  // Avoid duplicates in debrief.
   if (!sim.unnecessaryLog.includes(message)) sim.unnecessaryLog.push(message);
 }
 
@@ -1140,7 +1170,10 @@ function handlePrimaryAnswer(answer) {
     showFeedback("Primary Survey: Correct — ABCs first.");
   } else {
     logAction("Incorrect primary priority");
-    sim.badActions++;
+    recordBadAction(
+      "Primary survey: incorrect first priority",
+      "Stabilize airway, breathing, and circulation before lower-priority steps."
+    );
     showFeedback("Primary Survey: Incorrect — delayed primary assessment.");
   }
   setTimeout(goToECG, 800);
@@ -1173,7 +1206,10 @@ function handleECGAnswer(answer) {
     showFeedback("12-Lead ECG: Correct.");
   } else {
     logAction("Incorrect ECG interpretation");
-    sim.badActions++;
+    recordBadAction(
+      `12-lead: wrong interpretation (correct pattern was ${getCaseLabel()})`,
+      "Match ST changes to the affected territory before treatment decisions."
+    );
     showFeedback(`12-Lead ECG: Incorrect — correct answer was ${getCaseLabel()}.`);
   }
   setTimeout(showFocusedAssessment, 900);
@@ -1933,7 +1969,10 @@ function giveNC() {
 
   const wasNrb = sim.interventions.oxygenMode === "nrb";
   if (sim.vitals.spo2 >= 94) {
-    sim.badActions++;
+    recordBadAction(
+      `Nasal cannula with SpO₂ ${Math.round(sim.vitals.spo2)}% — oxygen not indicated`,
+      "Supplemental oxygen is usually reserved for hypoxia or protocol-specific indications."
+    );
     showFeedback("Oxygen not required.");
   } else {
     showFeedback("Nasal cannula applied — set flow on the Oxygen panel.");
@@ -1962,7 +2001,10 @@ function giveNRB() {
 
 
   if (sim.vitals.spo2 > 90) {
-    sim.badActions++;
+    recordBadAction(
+      `NRB with SpO₂ ${Math.round(sim.vitals.spo2)}% — not indicated`,
+      "High-flow oxygen when saturation is adequate may be unnecessary; follow local protocol."
+    );
     showFeedback("NRB not indicated.");
   } else {
     showFeedback("NRB applied — set flow on the Oxygen panel.");
@@ -2255,7 +2297,10 @@ function giveAspirin() {
     showFeedback("Aspirin given — caution: patient altered.");
     logActionOnce("asaAltered", "Aspirin given with altered mental status (caution)");
   } else if (sim.patient.allergy === "Aspirin") {
-    sim.recklessActions++;
+    recordRecklessAction(
+      "Aspirin given despite documented aspirin allergy",
+      "Do not give medications the patient is allergic to; use alternatives per protocol."
+    );
     showFeedback("Allergic to aspirin!");
     logActionOnce("asaAllergy", "Aspirin given despite allergy");
   } else {
@@ -2284,7 +2329,7 @@ function giveZofran() {
     showFeedback("Zofran given — nausea improved.");
     logActionOnce("zofran", "Zofran given (nausea improved)");
   } else {
-    sim.badActions++;
+    sim._zofranGivenWithoutNausea = true;
     showFeedback("Zofran given (no nausea reported).");
     logActionOnce("zofranNotInd", "Zofran given (not indicated)");
   }
@@ -2312,14 +2357,20 @@ function giveNitro() {
 
 
   if (sim.caseType === "inferior" && sbp < 110 && sbp >= 100 && !rv) {
-    sim.recklessActions++;
+    recordRecklessAction(
+      "Nitroglycerin with borderline BP (inferior STEMI)",
+      "Inferior ACS can involve RV preload dependence; nitroglycerin can drop BP—reassess perfusion carefully."
+    );
     logActionOnce("nitroInferiorBorderlineBP", "Nitro in inferior STEMI with borderline BP");
     showFeedback("Caution: inferior STEMI — nitro risky with borderline BP / RV concerns.");
   }
 
 
   if (pde5) {
-    sim.recklessActions++;
+    recordRecklessAction(
+      "Nitroglycerin after recent PDE5 inhibitor use",
+      "PDE5 inhibitors and nitrates together can cause dangerous hypotension."
+    );
     logActionOnce("nitroPDE5", "Nitro given despite PDE5 history");
     showFeedback("Contraindicated (PDE5) — nitro given anyway!");
     sim.vitals.sbp -= 22;
@@ -2328,7 +2379,10 @@ function giveNitro() {
 
 
   if (sbp < 100) {
-    sim.recklessActions++;
+    recordRecklessAction(
+      `Nitroglycerin with low BP (SBP ${Math.round(sbp)})`,
+      "Nitroglycerin is a vasodilator; avoid when blood pressure is below your protocol threshold."
+    );
     logActionOnce("nitroLowBP", "Nitro given despite SBP < 100");
     showFeedback("Contraindicated (SBP < 100) — nitro given anyway!");
     sim.vitals.sbp -= 18;
@@ -2337,7 +2391,10 @@ function giveNitro() {
 
 
   if (rv) {
-    sim.recklessActions++;
+    recordRecklessAction(
+      "Nitroglycerin with suspected RV involvement",
+      "RV infarct often depends on preload; nitroglycerin can reduce preload and crash blood pressure."
+    );
     logActionOnce("nitroRV", "Nitro given with suspected RV involvement");
     showFeedback("High-risk (RV involvement) — BP crash!");
     sim.vitals.sbp -= 30;
@@ -2374,7 +2431,10 @@ function giveMorphine() {
 
 
   if (sim.patient.allergy === "Morphine") {
-    sim.recklessActions++;
+    recordRecklessAction(
+      "Morphine given despite documented morphine allergy",
+      "Avoid known allergens; select a different analgesic per protocol."
+    );
     showFeedback("Allergic to morphine!");
     logActionOnce("morphAllergy", "Morphine given despite allergy");
   } else {
@@ -2680,6 +2740,10 @@ function buildBadActionHintsForDebrief() {
   };
 
 
+  (sim.badActionLedger || []).forEach((ev) => push(ev.title));
+  (sim.recklessActionLedger || []).forEach((ev) => push(ev.title));
+
+
   for (const a of sim.actionsLog || []) {
     const t = a.text || "";
     if (t.includes("Incorrect primary priority")) push("Primary survey: incorrect priority once.");
@@ -2730,6 +2794,15 @@ function computeScenarioScore() {
       -30,
       "Aspirin not given (expected when patient had adequate alert time and no aspirin allergy)",
       "Early antiplatelet therapy is a core ACS intervention when PO medications are safe and not contraindicated."
+    );
+  } else if (
+    sim.interventions.aspirinGiven &&
+    sim.patient.allergy !== "Aspirin" &&
+    !sim._asaGivenWhenAltered &&
+    (sim.alertContactSeconds || 0) >= ASPIRIN_EXPECT_ALERT_SEC
+  ) {
+    strengths.push(
+      "Aspirin given while the patient was alert long enough — appropriate antiplatelet step when not contraindicated."
     );
   }
 
@@ -2791,6 +2864,26 @@ function computeScenarioScore() {
       "Symptomatic bradycardia without atropine treatment",
       "When bradycardia is symptomatic and perfusion is threatened, consider atropine per protocol (and support BP with fluids/pressors as indicated)."
     );
+  } else if (sim._brady.symptomaticSeconds >= 8 && sim._brady.atropineGivenWhenIndicated) {
+    strengths.push(
+      "Symptomatic bradycardia treated with atropine when indicated — appropriate first-line step in this sim."
+    );
+  }
+
+
+  // Zofran without nausea: only penalize if no opioid was given (morphine/fentanyl). Prophylaxis before opioids is credit, not a fault.
+  if (sim._zofranGivenWithoutNausea) {
+    if ((sim.interventions.narcoticDoses || 0) > 0) {
+      strengths.push(
+        "Zofran given without prior nausea, with opioid analgesia this run — prophylaxis for opioid-related nausea is reasonable (no deduction)."
+      );
+    } else {
+      addDeduction(
+        -5,
+        "Zofran given without nausea or opioid analgesia this run",
+        "Reserve antiemetics for active nausea/vomiting or protocol-driven prophylaxis paired with meds that commonly cause nausea (e.g. opioids)."
+      );
+    }
   }
 
 
@@ -2830,25 +2923,18 @@ function computeScenarioScore() {
   }
 
 
-  const badPts = sim.badActions * 5;
-  if (badPts) {
-    const hint = buildBadActionHintsForDebrief();
-    addDeduction(
-      -badPts,
-      `Mistimed / not-indicated actions (${sim.badActions} × 5 points)`,
-      hint || "Open Patient Notes to see the full action log and align choices with vitals and presentation."
-    );
-  }
+  (sim.badActionLedger || []).forEach((ev) => {
+    const t = (ev && ev.title) || "Unlabeled scoring entry";
+    const teach = (ev && ev.teaching) || "";
+    addDeduction(-5, t, teach);
+  });
 
 
-  const reckPts = sim.recklessActions * 15;
-  if (reckPts) {
-    addDeduction(
-      -reckPts,
-      `High-risk or contraindicated actions (${sim.recklessActions} × 15 points)`,
-      "Examples include nitro with PDE5 use, nitro with SBP < 100, nitro with suspected RV involvement, or meds despite allergy — per sim rules."
-    );
-  }
+  (sim.recklessActionLedger || []).forEach((ev) => {
+    const t = (ev && ev.title) || "Unlabeled scoring entry";
+    const teach = (ev && ev.teaching) || "";
+    addDeduction(-15, t, teach);
+  });
 
 
   score = clamp(score, 0, 100);
@@ -2888,8 +2974,8 @@ function endScenario() {
   strengths.forEach((s) => positives.push(s));
 
 
-  if (sim.interventions.aspirinGiven || sim.patient.allergy === "Aspirin") {
-    positives.push("Addressed aspirin appropriately (given when safe, or correctly avoided with allergy).");
+  if (sim.patient.allergy === "Aspirin" && !sim.interventions.aspirinGiven) {
+    positives.push("Aspirin correctly withheld — documented aspirin allergy.");
   }
 
 
